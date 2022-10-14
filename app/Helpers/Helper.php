@@ -138,7 +138,7 @@ class Helper
         $os_platform = "unknown";
 
         $os_array = array(
-            '/windows nt 10/i' => 'Windows 10',
+            '/windows nt 10/i' => 'Windows 10/11',
             '/windows nt 6.3/i' => 'Windows 8.1',
             '/windows nt 6.2/i' => 'Windows 8',
             '/windows nt 6.1/i' => 'Windows 7',
@@ -429,7 +429,7 @@ class Helper
                     if ($i == 0) {
                         $check_WebmasterSection = WebmasterSection::where([['seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug], ['id', '!=', $id]]);
                     } else {
-                        $check_WebmasterSection = $check_WebmasterSection->orWhere([['seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug], ['id', '!=', $id]]);
+                        $check_WebmasterSection = WebmasterSection::orWhere([['seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug], ['id', '!=', $id]]);
                     }
                     $i++;
                 }
@@ -447,7 +447,7 @@ class Helper
                     if ($i == 0) {
                         $check_WebmasterSection = WebmasterSection::where('seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug);
                     } else {
-                        $check_WebmasterSection = $check_WebmasterSection->orWhere('seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug);
+                        $check_WebmasterSection = WebmasterSection::orWhere('seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug);
                     }
                     $i++;
                 }
@@ -468,7 +468,7 @@ class Helper
                     if ($i == 0) {
                         $check_Section = Section::where([['seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug], ['id', '!=', $id]]);
                     } else {
-                        $check_Section = $check_Section->orWhere([['seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug], ['id', '!=', $id]]);
+                        $check_Section = Section::orWhere([['seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug], ['id', '!=', $id]]);
                     }
                     $i++;
                 }
@@ -486,7 +486,7 @@ class Helper
                     if ($i == 0) {
                         $check_Section = Section::where('seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug);
                     } else {
-                        $check_Section = $check_Section->orWhere('seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug);
+                        $check_Section = Section::orWhere('seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug);
                     }
                     $i++;
                 }
@@ -506,7 +506,7 @@ class Helper
                     if ($i == 0) {
                         $check_Topic = Topic::where([['seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug], ['id', '!=', $id]]);
                     } else {
-                        $check_Topic = $check_Topic->orWhere([['seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug], ['id', '!=', $id]]);
+                        $check_Topic = Topic::orWhere([['seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug], ['id', '!=', $id]]);
                     }
                     $i++;
                 }
@@ -524,7 +524,7 @@ class Helper
                     if ($i == 0) {
                         $check_Topic = Topic::where('seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug);
                     } else {
-                        $check_Topic = $check_Topic->orWhere('seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug);
+                        $check_Topic = Topic::orWhere('seo_url_slug_' . $ActiveLanguage->code, $seo_url_slug);
                     }
                     $i++;
                 }
