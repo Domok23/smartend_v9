@@ -4,9 +4,9 @@
     <div class="center-block w-xxl p-t-3">
         <div class="p-a-md box-color r box-shadow-z4 text-color">
             <div class="text-center">
-                @if(Helper::GeneralSiteSettings("style_logo_" . @Helper::currentLanguage()->code) !="")
+                @if (Helper::GeneralSiteSettings('style_logo_' . @Helper::currentLanguage()->code) != '')
                     <img alt="" class="app-logo"
-                         src="{{ URL::to('uploads/settings/'.Helper::GeneralSiteSettings("style_logo_" . @Helper::currentLanguage()->code)) }}">
+                        src="{{ URL::to('uploads/settings/' . Helper::GeneralSiteSettings('style_logo_' . @Helper::currentLanguage()->code)) }}">
                 @else
                     <img alt="" src="{{ URL::to('uploads/settings/nologo.png') }}">
                 @endif
@@ -14,7 +14,7 @@
             <div class="m-y text-muted text-center">
                 {{ __('backend.resetPassword') }}
             </div>
-            <form name="reset" method="POST" action="{{ url('/'.env('BACKEND_PATH').'/password/reset') }}">
+            <form name="reset" method="POST" action="{{ url('/' . env('BACKEND_PATH') . '/password/reset') }}">
                 {{ csrf_field() }}
 
                 @if ($errors->has('email'))
@@ -65,4 +65,3 @@
         </div>
     </div>
 @endsection
-

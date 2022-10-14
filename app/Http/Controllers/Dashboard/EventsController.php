@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
+use File;
 use App\Models\Event;
 use App\Http\Requests;
-use App\Models\WebmasterSection;
-use Auth;
-use File;
-use Helper;
+use App\Helpers\Helper;
 use Illuminate\Http\Request;
+use App\Models\WebmasterSection;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class EventsController extends Controller
 {
@@ -136,8 +136,10 @@ class EventsController extends Controller
         if (!empty($EditEvent)) {
             $DefaultDate = $EditEvent->start_date;
             $EStatus = "edit";
-            return view("dashboard.events.list",
-                compact("GeneralWebmasterSections", "Events", "EditEvent", "DefaultDate", "EStatus"));
+            return view(
+                "dashboard.events.list",
+                compact("GeneralWebmasterSections", "Events", "EditEvent", "DefaultDate", "EStatus")
+            );
         } else {
             return redirect()->action('Dashboard\EventsController@index');
         }
@@ -252,5 +254,4 @@ class EventsController extends Controller
             $Event->save();
         }
     }
-
 }

@@ -500,7 +500,8 @@
                     </div>
                     <div class="box-body dker">
                         <div class="text-u-c _600 text-sm">
-                            <span class="text-primary m-r-sm">text-primary</span><span class="text-info m-r-sm">text-info</span>
+                            <span class="text-primary m-r-sm">text-primary</span><span
+                                class="text-info m-r-sm">text-info</span>
                             <span class="text-success">text-success</span>
                             <span class="text-warning">text-warning</span>
                             <span class="text-danger">text-danger</span>

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
 use App\Models\Menu;
-use App\Models\WebmasterSection;
-use Auth;
+use App\Http\Requests;
+use App\Helpers\Helper;
 use Illuminate\Http\Request;
-use Redirect;
-use Helper;
+use App\Models\WebmasterSection;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class MenusController extends Controller
 {
@@ -19,7 +19,7 @@ class MenusController extends Controller
         $this->middleware('auth');
 
         // Check Permissions
-        if(!@Auth::user()->permissionsGroup->settings_status){
+        if (!@Auth::user()->permissionsGroup->settings_status) {
             return Redirect::to(route('NoPermission'))->send();
         }
     }
@@ -38,14 +38,18 @@ class MenusController extends Controller
 
         if ($ParentMenuId > 0) {
             $EditedMenu = Menu::find($ParentMenuId);
-            $Menus = Menu::where('father_id', $ParentMenuId)->orderby('row_no',
-                'asc')->paginate(env('BACKEND_PAGINATION'));
+            $Menus = Menu::where('father_id', $ParentMenuId)->orderby(
+                'row_no',
+                'asc'
+            )->paginate(env('BACKEND_PAGINATION'));
         } else {
             $MenusCount = Menu::where('father_id', '0')->count();
             if ($MenusCount > 0) {
                 $Menusfirst = Menu::orderby('row_no', 'asc')->first();
-                $Menus = Menu::where('father_id', $Menusfirst->id)->orderby('row_no',
-                    'asc')->paginate(env('BACKEND_PAGINATION'));
+                $Menus = Menu::where('father_id', $Menusfirst->id)->orderby(
+                    'row_no',
+                    'asc'
+                )->paginate(env('BACKEND_PAGINATION'));
                 $EditedMenu = Menu::find($Menusfirst->id);
             } else {
                 $Menus = Menu::where('father_id', '0')->orderby('row_no', 'asc')->paginate(env('BACKEND_PAGINATION'));
@@ -73,8 +77,10 @@ class MenusController extends Controller
         //Father Menus
         $FatherMenus = Menu::where('father_id', $ParentMenuId)->where('type', 0)->orderby('row_no', 'asc')->get();
 
-        return view("dashboard.menus.create",
-            compact("GeneralWebmasterSections", "ParentMenuId", "FatherMenus"));
+        return view(
+            "dashboard.menus.create",
+            compact("GeneralWebmasterSections", "ParentMenuId", "FatherMenus")
+        );
     }
 
     /**
@@ -113,8 +119,10 @@ class MenusController extends Controller
         $Menu->created_by = Auth::user()->id;
         $Menu->save();
 
-        return redirect()->action('Dashboard\MenusController@edit', [$Menu->id,$request->ParentMenuId])->with('ParentMenuId',
-            $ParentMenuId)->with('doneMessage', __('backend.addDone'));
+        return redirect()->action('Dashboard\MenusController@edit', [$Menu->id, $request->ParentMenuId])->with(
+            'ParentMenuId',
+            $ParentMenuId
+        )->with('doneMessage', __('backend.addDone'));
     }
 
 
@@ -170,8 +178,10 @@ class MenusController extends Controller
 
         $Menus = Menu::find($id);
         if (!empty($Menus)) {
-            return view("dashboard.menus.edit",
-                compact("Menus", "GeneralWebmasterSections", "ParentMenuId", "FatherMenus"));
+            return view(
+                "dashboard.menus.edit",
+                compact("Menus", "GeneralWebmasterSections", "ParentMenuId", "FatherMenus")
+            );
         } else {
             return redirect()->action('Dashboard\MenusController@index');
         }
@@ -224,7 +234,7 @@ class MenusController extends Controller
             $Menu->status = $request->status;
             $Menu->updated_by = Auth::user()->id;
             $Menu->save();
-            return redirect()->action('Dashboard\MenusController@edit', [$Menu->id,$request->ParentMenuId])->with('doneMessage', __('backend.addDone'));
+            return redirect()->action('Dashboard\MenusController@edit', [$Menu->id, $request->ParentMenuId])->with('doneMessage', __('backend.addDone'));
         } else {
             return redirect()->action('Dashboard\MenusController@index');
         }
@@ -250,9 +260,13 @@ class MenusController extends Controller
             }
             $Menu->updated_by = Auth::user()->id;
             $Menu->save();
-            return redirect()->action('Dashboard\MenusController@index',
-                ["id" => $id, "ParentMenuId" => $request->ParentMenuId])->with('doneMessage2',
-                __('backend.saveDone'));
+            return redirect()->action(
+                'Dashboard\MenusController@index',
+                ["id" => $id, "ParentMenuId" => $request->ParentMenuId]
+            )->with(
+                'doneMessage2',
+                __('backend.saveDone')
+            );
         } else {
             return redirect()->action('Dashboard\MenusController@index');
         }
@@ -313,28 +327,25 @@ class MenusController extends Controller
                     $Menu->save();
                 }
             }
-
         } else {
             if ($request->ids != "") {
                 if ($request->action == "activate") {
                     Menu::wherein('id', $request->ids)
                         ->update(['status' => 1]);
-
                 } elseif ($request->action == "block") {
                     Menu::wherein('id', $request->ids)
                         ->update(['status' => 0]);
-
                 } elseif ($request->action == "delete") {
 
                     Menu::wherein('father_id', $request->ids)->delete();
                     Menu::wherein('id', $request->ids)
                         ->delete();
-
                 }
             }
         }
-        return redirect()->action('Dashboard\MenusController@index', $request->ParentMenuId)->with('doneMessage2',
-            __('backend.saveDone'));
+        return redirect()->action('Dashboard\MenusController@index', $request->ParentMenuId)->with(
+            'doneMessage2',
+            __('backend.saveDone')
+        );
     }
-
 }

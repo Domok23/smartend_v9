@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
-use App\Models\AttachFile;
-use App\Models\Comment;
-use App\Http\Requests;
 use App\Models\Map;
-use App\Models\Permissions;
-use App\Models\Photo;
-use App\Models\RelatedTopic;
-use App\Models\TopicCategory;
-use App\Models\TopicField;
-use App\Models\WebmasterSection;
-use App\Models\WebmasterSectionField;
 use App\Models\Menu;
-use Auth;
-use File;
-use Helper;
+use App\Models\Photo;
+use App\Http\Requests;
+use App\Helpers\Helper;
+use App\Models\Comment;
+use App\Models\AttachFile;
+use App\Models\TopicField;
+use App\Models\Permissions;
+use App\Models\RelatedTopic;
 use Illuminate\Http\Request;
-use Redirect;
+use App\Models\TopicCategory;
+use App\Models\WebmasterSection;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use App\Models\WebmasterSectionField;
+use Illuminate\Support\Facades\Redirect;
 
 class WebmasterSectionsController extends Controller
 {
@@ -30,12 +30,11 @@ class WebmasterSectionsController extends Controller
         $this->middleware('auth');
 
         // Check Permissions
-        if(!@Auth::user()->permissionsGroup->webmaster_status){
+        if (!@Auth::user()->permissionsGroup->webmaster_status) {
             return Redirect::to(route('NoPermission'))->send();
         }
 
         \Session()->forget('_Loader_WebmasterSections');
-
     }
 
     /**
@@ -194,8 +193,10 @@ class WebmasterSectionsController extends Controller
             $WebmasterSection->status = $request->status;
             $WebmasterSection->updated_by = Auth::user()->id;
             $WebmasterSection->save();
-            return redirect()->action('Dashboard\WebmasterSectionsController@edit', $id)->with('doneMessage',
-                __('backend.saveDone'));
+            return redirect()->action('Dashboard\WebmasterSectionsController@edit', $id)->with(
+                'doneMessage',
+                __('backend.saveDone')
+            );
         } else {
             return redirect()->action('Dashboard\WebmasterSectionsController@index');
         }
@@ -214,8 +215,10 @@ class WebmasterSectionsController extends Controller
             }
             $WebmasterSection->updated_by = Auth::user()->id;
             $WebmasterSection->save();
-            return redirect()->action('Dashboard\WebmasterSectionsController@edit', $id)->with('doneMessage',
-                __('backend.saveDone'))->with('activeTab', 'seo');
+            return redirect()->action('Dashboard\WebmasterSectionsController@edit', $id)->with(
+                'doneMessage',
+                __('backend.saveDone')
+            )->with('activeTab', 'seo');
         } else {
             return redirect()->action('SectionsController@index');
         }
@@ -305,8 +308,10 @@ class WebmasterSectionsController extends Controller
             WebmasterSectionField::where('webmaster_id', $id)->delete();
             //delete section
             $WebmasterSection->delete();
-            return redirect()->action('Dashboard\WebmasterSectionsController@index')->with('doneMessage',
-                __('backend.deleteDone'));
+            return redirect()->action('Dashboard\WebmasterSectionsController@index')->with(
+                'doneMessage',
+                __('backend.deleteDone')
+            );
         } else {
             return redirect()->action('Dashboard\WebmasterSectionsController@index');
         }
@@ -336,11 +341,9 @@ class WebmasterSectionsController extends Controller
                 if ($request->action == "activate") {
                     WebmasterSection::wherein('id', $request->ids)
                         ->update(['status' => 1]);
-
                 } elseif ($request->action == "block") {
                     WebmasterSection::wherein('id', $request->ids)
                         ->update(['status' => 0]);
-
                 } elseif ($request->action == "delete") {
 
                     $WebmasterSections = WebmasterSection::wherein('id', $request->ids)->get();
@@ -417,7 +420,6 @@ class WebmasterSectionsController extends Controller
                     //delete section
                     WebmasterSection::wherein('id', $request->ids)
                         ->delete();
-
                 }
             }
         }
@@ -426,7 +428,7 @@ class WebmasterSectionsController extends Controller
 
 
 
-// Fields Functions
+    // Fields Functions
 
     /**
      * Show all Fields.
@@ -456,8 +458,10 @@ class WebmasterSectionsController extends Controller
     {
         $WebmasterSection = WebmasterSection::find($webmasterId);
         if (!empty($WebmasterSection)) {
-            return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with('activeTab',
-                'fields')->with('fieldST', 'create');
+            return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with(
+                'activeTab',
+                'fields'
+            )->with('fieldST', 'create');
         } else {
             return redirect()->route('NotFound');
         }
@@ -562,9 +566,10 @@ class WebmasterSectionsController extends Controller
 
             $WebmasterSectionField->save();
 
-            return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with('doneMessage',
-                __('backend.saveDone'))->with('activeTab', 'fields');
-
+            return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with(
+                'doneMessage',
+                __('backend.saveDone')
+            )->with('activeTab', 'fields');
         } else {
             return redirect()->route('NotFound');
         }
@@ -585,8 +590,10 @@ class WebmasterSectionsController extends Controller
         if (!empty($WebmasterSection)) {
             $WebmasterSectionField = WebmasterSectionField::find($field_id);
             if (!empty($WebmasterSectionField)) {
-                return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with('activeTab',
-                    'fields')->with('fieldST', 'edit')->with('WebmasterSectionField', $WebmasterSectionField);
+                return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with(
+                    'activeTab',
+                    'fields'
+                )->with('fieldST', 'edit')->with('WebmasterSectionField', $WebmasterSectionField);
             } else {
                 return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with('activeTab', 'fields');
             }
@@ -686,8 +693,10 @@ class WebmasterSectionsController extends Controller
 
                 $WebmasterSectionField->save();
 
-                return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with('doneMessage',
-                    __('backend.saveDone'))->with('activeTab', 'fields');
+                return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with(
+                    'doneMessage',
+                    __('backend.saveDone')
+                )->with('activeTab', 'fields');
             } else {
                 return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with('activeTab', 'fields');
             }
@@ -712,8 +721,10 @@ class WebmasterSectionsController extends Controller
             $WebmasterSectionField = WebmasterSectionField::find($file_id);
             if (!empty($WebmasterSectionField)) {
                 $WebmasterSectionField->delete();
-                return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with('doneMessage',
-                    __('backend.deleteDone'))->with('activeTab', 'fields');
+                return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with(
+                    'doneMessage',
+                    __('backend.deleteDone')
+                )->with('activeTab', 'fields');
             } else {
                 return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with('activeTab', 'fields');
             }
@@ -750,25 +761,22 @@ class WebmasterSectionsController extends Controller
                     if ($request->action == "activate") {
                         WebmasterSectionField::wherein('id', $request->ids)
                             ->update(['status' => 1]);
-
                     } elseif ($request->action == "block") {
                         WebmasterSectionField::wherein('id', $request->ids)
                             ->update(['status' => 0]);
-
                     } elseif ($request->action == "delete") {
 
                         WebmasterSectionField::wherein('id', $request->ids)
                             ->delete();
-
                     }
                 }
             }
-            return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with('doneMessage',
-                __('backend.saveDone'))->with('activeTab', 'fields');
+            return redirect()->action('Dashboard\WebmasterSectionsController@edit', [$webmasterId])->with(
+                'doneMessage',
+                __('backend.saveDone')
+            )->with('activeTab', 'fields');
         } else {
             return redirect()->route('NotFound');
         }
     }
-
-
 }

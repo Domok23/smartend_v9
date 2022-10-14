@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Helpers\Helper;
 use App\Models\Setting;
-use App\Models\WebmasterSection;
-use Auth;
-use File;
 use Illuminate\Http\Request;
-use Redirect;
-use Helper;
+use App\Models\WebmasterSection;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Redirect;
 
 class SettingsController extends Controller
 {
@@ -22,12 +22,11 @@ class SettingsController extends Controller
         $this->middleware('auth');
 
         // Check Permissions
-        if(!@Auth::user()->permissionsGroup->settings_status){
+        if (!@Auth::user()->permissionsGroup->settings_status) {
             return Redirect::to(route('NoPermission'))->send();
         }
 
         \Session()->forget('_Loader_Web_Settings');
-
     }
 
     public function edit()
@@ -42,7 +41,6 @@ class SettingsController extends Controller
         $Setting = Setting::find($id);
         if (!empty($Setting)) {
             return view("dashboard.settings.settings", compact("Setting", "GeneralWebmasterSections"));
-
         } else {
             return redirect()->route('adminHome');
         }
@@ -80,8 +78,10 @@ class SettingsController extends Controller
                         $formFileName => 'mimes:png,jpeg,jpg,gif,svg'
                     ]);
 
-                    $fileFinalName = time() . rand(1111,
-                            9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                    $fileFinalName = time() . rand(
+                        1111,
+                        9999
+                    ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                     $path = $this->uploadPath;
                     $request->file($formFileName)->move($path, $fileFinalName);
                 }
@@ -119,8 +119,10 @@ class SettingsController extends Controller
                     File::delete($this->uploadPath . $Setting->style_fav);
                 }
 
-                $fileFinalName2 = time() . rand(1111,
-                        9999) . '.' . $request->file($formFileName2)->getClientOriginalExtension();
+                $fileFinalName2 = time() . rand(
+                    1111,
+                    9999
+                ) . '.' . $request->file($formFileName2)->getClientOriginalExtension();
                 $path = $this->uploadPath;
                 $request->file($formFileName2)->move($path, $fileFinalName2);
             }
@@ -134,8 +136,10 @@ class SettingsController extends Controller
                     File::delete($this->uploadPath . $Setting->style_apple);
                 }
 
-                $fileFinalName3 = time() . rand(1111,
-                        9999) . '.' . $request->file($formFileName3)->getClientOriginalExtension();
+                $fileFinalName3 = time() . rand(
+                    1111,
+                    9999
+                ) . '.' . $request->file($formFileName3)->getClientOriginalExtension();
                 $path = $this->uploadPath;
                 $request->file($formFileName3)->move($path, $fileFinalName3);
             }
@@ -149,8 +153,10 @@ class SettingsController extends Controller
                     File::delete($this->uploadPath . $Setting->style_bg_image);
                 }
 
-                $fileFinalName4 = time() . rand(1111,
-                        9999) . '.' . $request->file($formFileName4)->getClientOriginalExtension();
+                $fileFinalName4 = time() . rand(
+                    1111,
+                    9999
+                ) . '.' . $request->file($formFileName4)->getClientOriginalExtension();
                 $path = $this->uploadPath;
                 $request->file($formFileName4)->move($path, $fileFinalName4);
             }
@@ -164,8 +170,10 @@ class SettingsController extends Controller
                     File::delete($this->uploadPath . $Setting->style_footer_bg);
                 }
 
-                $fileFinalName5 = time() . rand(1111,
-                        9999) . '.' . $request->file($formFileName5)->getClientOriginalExtension();
+                $fileFinalName5 = time() . rand(
+                    1111,
+                    9999
+                ) . '.' . $request->file($formFileName5)->getClientOriginalExtension();
                 $path = $this->uploadPath;
                 $request->file($formFileName5)->move($path, $fileFinalName5);
             }
@@ -235,5 +243,4 @@ class SettingsController extends Controller
             return redirect()->route('adminHome');
         }
     }
-
 }

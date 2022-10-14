@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 Route::get('/', 'APIsController@api')->name('apiURL');
 // general
 Route::get('/website/status', 'APIsController@website_status');

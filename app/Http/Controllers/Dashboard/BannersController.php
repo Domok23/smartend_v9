@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
-use App\Models\Banner;
 use App\Http\Requests;
+use App\Models\Banner;
+use Illuminate\Config;
+use App\Helpers\Helper;
+use Illuminate\Http\Request;
 use App\Models\WebmasterBanner;
 use App\Models\WebmasterSection;
-use Auth;
-use File;
-use Helper;
-use Illuminate\Config;
-use Illuminate\Http\Request;
-use Redirect;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Redirect;
 
 class BannersController extends Controller
 {
@@ -47,12 +47,18 @@ class BannersController extends Controller
         $WebmasterBanners = WebmasterBanner::where('status', '=', '1')->orderby('row_no', 'asc')->get();
 
         if (@Auth::user()->permissionsGroup->view_status) {
-            $Banners = Banner::where('created_by', '=', Auth::user()->id)->orderby('section_id',
-                'asc')->orderby('row_no',
-                'asc')->paginate(env('BACKEND_PAGINATION'));
+            $Banners = Banner::where('created_by', '=', Auth::user()->id)->orderby(
+                'section_id',
+                'asc'
+            )->orderby(
+                'row_no',
+                'asc'
+            )->paginate(env('BACKEND_PAGINATION'));
         } else {
-            $Banners = Banner::orderby('section_id', 'asc')->orderby('row_no',
-                'asc')->paginate(env('BACKEND_PAGINATION'));
+            $Banners = Banner::orderby('section_id', 'asc')->orderby(
+                'row_no',
+                'asc'
+            )->paginate(env('BACKEND_PAGINATION'));
         }
         return view("dashboard.banners.list", compact("Banners", "GeneralWebmasterSections", "WebmasterBanners"));
     }
@@ -117,8 +123,10 @@ class BannersController extends Controller
                         $formFileName => 'mimes:png,jpeg,jpg,gif,svg'
                     ]);
 
-                    $fileFinalName = time() . rand(1111,
-                            9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                    $fileFinalName = time() . rand(
+                        1111,
+                        9999
+                    ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                     $path = $this->uploadPath;
                     $request->file($formFileName)->move($path, $fileFinalName);
                 }
@@ -128,8 +136,10 @@ class BannersController extends Controller
                         $this->validate($request, [
                             $formFileName => 'mimes:mp4,ogv,webm'
                         ]);
-                        $fileFinalName = time() . rand(1111,
-                                9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                        $fileFinalName = time() . rand(
+                            1111,
+                            9999
+                        ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                         $path = $this->uploadPath;
                         $request->file($formFileName)->move($path, $fileFinalName);
                     }
@@ -221,8 +231,10 @@ class BannersController extends Controller
                             $formFileName => 'mimes:png,jpeg,jpg,gif,svg'
                         ]);
 
-                        $fileFinalName = time() . rand(1111,
-                                9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                        $fileFinalName = time() . rand(
+                            1111,
+                            9999
+                        ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                         $path = $this->uploadPath;
                         $request->file($formFileName)->move($path, $fileFinalName);
                     }
@@ -233,8 +245,10 @@ class BannersController extends Controller
 
                         $formFileName = "file2_" . $ActiveLanguage->code;
                         if ($request->$formFileName != "") {
-                            $fileFinalName = time() . rand(1111,
-                                    9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                            $fileFinalName = time() . rand(
+                                1111,
+                                9999
+                            ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                             $path = $this->uploadPath;
                             $request->file($formFileName)->move($path, $fileFinalName);
                         }
@@ -323,17 +337,14 @@ class BannersController extends Controller
                     $Banner->save();
                 }
             }
-
         } else {
             if ($request->ids != "") {
                 if ($request->action == "activate") {
                     Banner::wherein('id', $request->ids)
                         ->update(['status' => 1]);
-
                 } elseif ($request->action == "block") {
                     Banner::wherein('id', $request->ids)
                         ->update(['status' => 0]);
-
                 } elseif ($request->action == "delete") {
                     // Check Permissions
                     if (!@Auth::user()->permissionsGroup->delete_status) {
@@ -353,12 +364,9 @@ class BannersController extends Controller
 
                     Banner::wherein('id', $request->ids)
                         ->delete();
-
                 }
             }
         }
         return redirect()->action('Dashboard\BannersController@index')->with('doneMessage', __('backend.saveDone'));
     }
-
-
 }

@@ -2,12 +2,12 @@
 
 namespace App\Mail;
 
+use App\Helpers\Helper;
 use App\Models\Setting;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Helper;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class NotificationEmail extends Mailable
 {
@@ -50,7 +50,6 @@ class NotificationEmail extends Mailable
             if (isset($data[$index])) {
                 return $data[$index];
             }
-
         }, $html_code);
     }
 }

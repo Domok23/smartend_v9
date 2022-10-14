@@ -1,5 +1,5 @@
-@if(!empty(@$errors))
-    @if(@$errors->any())
+@if (!empty(@$errors))
+    @if (@$errors->any())
         <div class="padding p-b-0">
             <div class="row">
                 <div class="col-lg-12">
@@ -8,7 +8,7 @@
                             <span aria-hidden="true">×</span>
                         </button>
                         <ul>
-                            @foreach($errors->all() as $error)
+                            @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
                         </ul>
@@ -19,7 +19,7 @@
     @endif
 @endif
 
-@if(Session::has('doneMessage'))
+@if (Session::has('doneMessage'))
     <div class="padding p-b-0">
         <div class="row">
             <div class="col-lg-12">
@@ -34,7 +34,7 @@
     </div>
 @endif
 
-@if(Session::has('errorMessage'))
+@if (Session::has('errorMessage'))
     <div class="padding p-b-0">
         <div class="row">
             <div class="col-lg-12">
@@ -49,7 +49,7 @@
     </div>
 @endif
 
-@if(Session::has('infoMessage'))
+@if (Session::has('infoMessage'))
     <div class="padding p-b-0">
         <div class="row">
             <div class="col-lg-12">
@@ -65,7 +65,7 @@
 @endif
 
 
-@if(Session::has('warningMessage'))
+@if (Session::has('warningMessage'))
     <div class="padding p-b-0">
         <div class="row">
             <div class="col-lg-12">
@@ -79,4 +79,3 @@
         </div>
     </div>
 @endif
-

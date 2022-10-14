@@ -1,5 +1,5 @@
 @extends('dashboard.layouts.auth')
-@section('title', "503")
+@section('title', '503')
 @section('content')
     <div class="app-body indigo bg-auto w-full">
         <div class="text-center pos-rlt p-y-md">
@@ -13,4 +13,3 @@
         </div>
     </div>
 @endsection
-

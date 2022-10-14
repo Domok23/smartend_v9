@@ -1,8 +1,7 @@
 <script type="text/javascript">
     var public_lang = "{{ @Helper::currentLanguage()->code }}";
     var public_folder_path = "{{ asset('') }}";
-    var first_day_of_week = "{{ env("FIRST_DAY_OF_WEEK",0) }}";
-
+    var first_day_of_week = "{{ env('FIRST_DAY_OF_WEEK', 0) }}";
 </script>
 @stack('before-scripts')
 <!-- jQuery -->
@@ -11,7 +10,7 @@
 <script src="{{ asset('assets/dashboard/js/tether/dist/js/tether.min.js') }}" defer></script>
 <script src="{{ asset('assets/dashboard/js/bootstrap/dist/js/bootstrap.js') }}" defer></script>
 <script src="{{ asset('assets/dashboard/js/moment/moment.js') }}" defer></script>
-<script src="{{ asset('assets/dashboard/js/moment/locale/'.@Helper::currentLanguage()->code.'.js') }}" defer></script>
+<script src="{{ asset('assets/dashboard/js/moment/locale/' . @Helper::currentLanguage()->code . '.js') }}" defer></script>
 <!-- core -->
 <script src="{{ asset('assets/dashboard/js/underscore/underscore-min.js') }}" defer></script>
 <script src="{{ asset('assets/dashboard/js/jQuery-Storage-API/jquery.storageapi.min.js') }}" defer></script>
@@ -32,5 +31,5 @@
 
 <script src="{{ asset('assets/dashboard/js/scripts/app.js') }}" defer></script>
 
-{!! Helper::SaveVisitorInfo("Dashboard &raquo; ".trim($__env->yieldContent('title'))) !!}
+{!! Helper::SaveVisitorInfo('Dashboard &raquo; ' . trim($__env->yieldContent('title'))) !!}
 @stack('after-scripts')

@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
-use App\Models\AnalyticsPage;
-use App\Models\AnalyticsVisitor;
-use App\Http\Requests;
-use App\Models\WebmasterSection;
-use Auth;
 use File;
 use Helper;
+use App\Http\Requests;
 use Illuminate\Http\Request;
-use Redirect;
+use App\Models\AnalyticsPage;
+use App\Models\AnalyticsVisitor;
+use App\Models\WebmasterSection;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class AnalyticsController extends Controller
 {
@@ -94,7 +94,6 @@ class AnalyticsController extends Controller
             $ix++;
         }
         if ($stat == "date") {
-
         } else {
             usort($AnalyticsValues, function ($a, $b) {
                 return $b['visits'] - $a['visits'];
@@ -130,11 +129,24 @@ class AnalyticsController extends Controller
         }
 
 
-        return view("dashboard.analytics.list",
-            compact("GeneralWebmasterSections", "daterangepicker_start", "daterangepicker_end",
-                "daterangepicker_start_text", "daterangepicker_end_text", "min_visitor_date", "max_visitor_date",
-                "stat", "AnalyticsVisitors", "TotalVisitors", "TotalPages", "statText", "AnalyticsValues"));
-
+        return view(
+            "dashboard.analytics.list",
+            compact(
+                "GeneralWebmasterSections",
+                "daterangepicker_start",
+                "daterangepicker_end",
+                "daterangepicker_start_text",
+                "daterangepicker_end_text",
+                "min_visitor_date",
+                "max_visitor_date",
+                "stat",
+                "AnalyticsVisitors",
+                "TotalVisitors",
+                "TotalPages",
+                "statText",
+                "AnalyticsValues"
+            )
+        );
     }
 
     /**
@@ -209,7 +221,6 @@ class AnalyticsController extends Controller
         }
 
         if ($stat == "date") {
-
         } else {
             usort($AnalyticsValues, function ($a, $b) {
                 return $b['visits'] - $a['visits'];
@@ -244,11 +255,24 @@ class AnalyticsController extends Controller
             $statText = "visitorsAnalyticsBydate";
         }
 
-        return view("dashboard.analytics.list",
-            compact("GeneralWebmasterSections", "daterangepicker_start", "daterangepicker_end",
-                "daterangepicker_start_text", "daterangepicker_end_text", "min_visitor_date", "max_visitor_date",
-                "stat", "AnalyticsVisitors", "TotalVisitors", "TotalPages", "statText", "AnalyticsValues"));
-
+        return view(
+            "dashboard.analytics.list",
+            compact(
+                "GeneralWebmasterSections",
+                "daterangepicker_start",
+                "daterangepicker_end",
+                "daterangepicker_start_text",
+                "daterangepicker_end_text",
+                "min_visitor_date",
+                "max_visitor_date",
+                "stat",
+                "AnalyticsVisitors",
+                "TotalVisitors",
+                "TotalPages",
+                "statText",
+                "AnalyticsValues"
+            )
+        );
     }
 
 
@@ -265,8 +289,10 @@ class AnalyticsController extends Controller
         // General END
 
         //List of Analytics Visitors
-        $AnalyticsVisitors = AnalyticsVisitor::orderby('date', 'desc')->orderby('time',
-            'desc')->paginate(env('BACKEND_PAGINATION'));
+        $AnalyticsVisitors = AnalyticsVisitor::orderby('date', 'desc')->orderby(
+            'time',
+            'desc'
+        )->paginate(env('BACKEND_PAGINATION'));
 
         return view("dashboard.analytics.visitors", compact("GeneralWebmasterSections", "AnalyticsVisitors"));
     }
@@ -303,8 +329,7 @@ class AnalyticsController extends Controller
     public
     function search(
         Request $request
-    )
-    {
+    ) {
         //
         // General for all pages
         $GeneralWebmasterSections = WebmasterSection::where('status', '=', '1')->orderby('row_no', 'asc')->get();
@@ -321,6 +346,4 @@ class AnalyticsController extends Controller
 
         return view("dashboard.analytics.ip", compact("GeneralWebmasterSections", "AnalyticsVisitors", "ip_code"));
     }
-
-
 }

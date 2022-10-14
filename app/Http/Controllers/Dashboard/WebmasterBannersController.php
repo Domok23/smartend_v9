@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Helpers\Helper;
+use Illuminate\Http\Request;
 use App\Models\WebmasterBanner;
 use App\Models\WebmasterSection;
-use Auth;
-use Illuminate\Http\Request;
-use Redirect;
-use File;
-use Helper;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Redirect;
 
 class WebmasterBannersController extends Controller
 {

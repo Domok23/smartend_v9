@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-use App\Models\Permissions;
-use App\Models\User;
-use App\Models\WebmasterSection;
-use Auth;
-use File;
-use Illuminate\Config;
-use Illuminate\Http\Request;
 use Redirect;
-use Helper;
+use App\Models\User;
+use App\Http\Requests;
+use App\Helpers\Helper;
+use App\Models\Permissions;
+use Illuminate\Http\Request;
+use App\Models\WebmasterSection;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Config;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
@@ -46,8 +46,10 @@ class UsersController extends Controller
         // General END
 
         if (@Auth::user()->permissionsGroup->view_status) {
-            $Users = User::where('created_by', '=', Auth::user()->id)->orwhere('id', '=', Auth::user()->id)->orderby('id',
-                'asc')->paginate(env('BACKEND_PAGINATION'));
+            $Users = User::where('created_by', '=', Auth::user()->id)->orwhere('id', '=', Auth::user()->id)->orderby(
+                'id',
+                'asc'
+            )->paginate(env('BACKEND_PAGINATION'));
             $Permissions = Permissions::where('created_by', '=', Auth::user()->id)->orderby('id', 'asc')->get();
         } else {
             $Users = User::orderby('id', 'asc')->paginate(env('BACKEND_PAGINATION'));
@@ -93,12 +95,13 @@ class UsersController extends Controller
             'photo' => 'mimes:png,jpeg,jpg,gif,svg',
             'name' => 'required',
             'email' => 'required|email|unique:users',
-            'password' => ['required', Password::min(6)
-                ->letters()
-                ->mixedCase()
-                ->numbers()
-                ->symbols()
-                ->uncompromised()
+            'password' => [
+                'required', Password::min(6)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised()
             ],
             'permissions_id' => 'required'
         ]);
@@ -108,8 +111,10 @@ class UsersController extends Controller
         $formFileName = "photo";
         $fileFinalName_ar = "";
         if ($request->$formFileName != "") {
-            $fileFinalName_ar = time() . rand(1111,
-                    9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+            $fileFinalName_ar = time() . rand(
+                1111,
+                9999
+            ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
             $path = $this->getUploadPath();
             $request->file($formFileName)->move($path, $fileFinalName_ar);
         }
@@ -201,8 +206,10 @@ class UsersController extends Controller
             $formFileName = "photo";
             $fileFinalName_ar = "";
             if ($request->$formFileName != "") {
-                $fileFinalName_ar = time() . rand(1111,
-                        9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                $fileFinalName_ar = time() . rand(
+                    1111,
+                    9999
+                ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                 $path = $this->getUploadPath();
                 $request->file($formFileName)->move($path, $fileFinalName_ar);
             }
@@ -295,11 +302,9 @@ class UsersController extends Controller
             if ($request->action == "activate") {
                 User::wherein('id', $request->ids)
                     ->update(['status' => 1]);
-
             } elseif ($request->action == "block") {
                 User::wherein('id', $request->ids)->where('id', '!=', 1)
                     ->update(['status' => 0]);
-
             } elseif ($request->action == "delete") {
                 // Delete User photo
                 $Users = User::wherein('id', $request->ids)->where('id', '!=', 1)->get();
@@ -311,7 +316,6 @@ class UsersController extends Controller
 
                 User::wherein('id', $request->ids)->where('id', "!=", 1)
                     ->delete();
-
             }
         }
         return redirect()->action('Dashboard\UsersController@index')->with('doneMessage', __('backend.saveDone'));
@@ -459,8 +463,10 @@ class UsersController extends Controller
 
             $Permissions->status = $request->status;
             $Permissions->save();
-            return redirect()->action('Dashboard\UsersController@permissions_edit', $id)->with('doneMessage',
-                __('backend.saveDone'));
+            return redirect()->action('Dashboard\UsersController@permissions_edit', $id)->with(
+                'doneMessage',
+                __('backend.saveDone')
+            );
         } else {
             return redirect()->action('Dashboard\UsersController@index');
         }
@@ -544,12 +550,13 @@ class UsersController extends Controller
                 $home_links = json_encode($home_links);
                 $Permissions->home_links = $home_links;
             } catch (\Exception $e) {
-
             }
 
             $Permissions->save();
-            return redirect()->action('Dashboard\UsersController@permissions_edit', $id)->with('doneMessage',
-                __('backend.saveDone'))->with('tab', "home");
+            return redirect()->action('Dashboard\UsersController@permissions_edit', $id)->with(
+                'doneMessage',
+                __('backend.saveDone')
+            )->with('tab', "home");
         } else {
             return redirect()->action('Dashboard\UsersController@index');
         }
@@ -712,7 +719,6 @@ class UsersController extends Controller
                 $home_links = json_encode($home_links);
                 $home_links = json_decode($home_links);
             } catch (\Exception $e) {
-
             }
         }
         return view("dashboard.permissions.home.links.list", compact("Permissions", "home_links"));
@@ -753,7 +759,6 @@ class UsersController extends Controller
                     }
                 }
             } catch (\Exception $e) {
-
             }
         }
         return view("dashboard.permissions.home.links.edit", compact("home_page_button", "Permissions"));
@@ -800,7 +805,6 @@ class UsersController extends Controller
                             }
                             $home_links[] = $new_link_details;
                             $row_no++;
-
                         } else {
                             $link_details = [
                                 "btn_id" => @$saved_home_link->btn_id,
@@ -818,7 +822,6 @@ class UsersController extends Controller
                             $home_links[] = $link_details;
                             $row_no = $saved_home_link->btn_order + 1;
                         }
-
                     }
                 }
 

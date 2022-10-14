@@ -2,27 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\File;
-use App;
+use Redirect;
+use App\Models\User;
+use App\Models\Topic;
 use App\Models\Banner;
-use App\Mail\NotificationEmail;
+use App\Helpers\Helper;
 use App\Models\Comment;
 use App\Models\Contact;
 use App\Models\Section;
 use App\Models\Setting;
-use App\Models\Topic;
-use App\Models\TopicCategory;
-use App\Models\TopicField;
-use App\Models\User;
 use App\Models\Webmail;
+use App\Models\TopicField;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\TopicCategory;
+use App\Mail\NotificationEmail;
 use App\Models\WebmasterSection;
 use App\Models\WebmasterSetting;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Mail;
-use Redirect;
-use Helper;
-use Auth;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 
 class HomeController extends Controller
 {
@@ -48,25 +50,25 @@ class HomeController extends Controller
         if ($lang != "") {
             // Set Language
             App::setLocale($lang);
-            \Session::put('locale', $lang);
+            Session::put('locale', $lang);
         }
         $seo_url_slug = Str::slug($seo_url_slug, '-');
 
         switch ($seo_url_slug) {
-            case "home" :
+            case "home":
                 return $this->HomePage();
                 break;
-            case "about" :
+            case "about":
                 $id = 1;
                 $section = 1;
                 return $this->topic($section, $id);
                 break;
-            case "privacy" :
+            case "privacy":
                 $id = 3;
                 $section = 1;
                 return $this->topic($section, $id);
                 break;
-            case "terms" :
+            case "terms":
                 $id = 4;
                 $section = 1;
                 return $this->topic($section, $id);
@@ -153,7 +155,7 @@ class HomeController extends Controller
                         }
                     }
                     if (!empty($Topic)) {
-                        if($Topic->id == $WebmasterSettings->contact_page_id){
+                        if ($Topic->id == $WebmasterSettings->contact_page_id) {
                             return $this->ContactPage();
                         }
                         // SITE Topic
@@ -169,7 +171,6 @@ class HomeController extends Controller
                 }
             }
         }
-
     }
 
     public function HomePage()
@@ -183,7 +184,7 @@ class HomeController extends Controller
         if ($lang != "") {
             // Set Language
             App::setLocale($lang);
-            \Session::put('locale', $lang);
+            Session::put('locale', $lang);
         }
         // General Webmaster Settings
         $WebmasterSettings = WebmasterSetting::find(1);
@@ -192,19 +193,23 @@ class HomeController extends Controller
         $HomeTopics = Topic::where([['status', 1], ['webmaster_id', $WebmasterSettings->home_content1_section_id], ['expire_date', '>=', date("Y-m-d")], ['expire_date', '<>', null]])->orwhere([['status', 1], ['webmaster_id', $WebmasterSettings->home_content1_section_id], ['expire_date', null]])->orderby('date', env("FRONTEND_TOPICS_ORDER", "asc"))->limit(12)->get();
         // Home photos
         $HomePhotos = Topic::where([['status', 1], ['webmaster_id', $WebmasterSettings->home_content2_section_id], ['expire_date', '>=', date("Y-m-d")], ['expire_date', '<>', null]])->orwhere([['status', 1], ['webmaster_id', $WebmasterSettings->home_content2_section_id], ['expire_date', null]])->orderby('date', env("FRONTEND_TOPICS_ORDER", "asc"))->limit(6)->get();
-// Home Partners
+        // Home Partners
         $HomePartners = Topic::where([['status', 1], ['webmaster_id', $WebmasterSettings->home_content3_section_id], ['expire_date', '>=', date("Y-m-d")], ['expire_date', '<>', null]])->orwhere([['status', 1], ['webmaster_id', $WebmasterSettings->home_content3_section_id], ['expire_date', null]])->orderby('date', env("FRONTEND_TOPICS_ORDER", "asc"))->get();
 
         // Get Latest News
         $LatestNews = $this->latest_topics($WebmasterSettings->latest_news_section_id);
 
         // Get Home page slider banners
-        $SliderBanners = Banner::where('section_id', $WebmasterSettings->home_banners_section_id)->where('status',
-            1)->orderby('row_no', 'asc')->get();
+        $SliderBanners = Banner::where('section_id', $WebmasterSettings->home_banners_section_id)->where(
+            'status',
+            1
+        )->orderby('row_no', 'asc')->get();
 
         // Get Home page Test banners
-        $TextBanners = Banner::where('section_id', $WebmasterSettings->home_text_banners_section_id)->where('status',
-            1)->orderby('row_no', 'asc')->get();
+        $TextBanners = Banner::where('section_id', $WebmasterSettings->home_text_banners_section_id)->where(
+            'status',
+            1
+        )->orderby('row_no', 'asc')->get();
 
         $site_desc_var = "site_desc_" . @Helper::currentLanguage()->code;
         $site_keywords_var = "site_keywords_" . @Helper::currentLanguage()->code;
@@ -218,7 +223,8 @@ class HomeController extends Controller
             $HomePage = Topic::where("status", 1)->find($WebmasterSettings->default_currency_id);
         }
 
-        return view("frontEnd.home",
+        return view(
+            "frontEnd.home",
             compact(
                 "WebmasterSettings",
                 "SliderBanners",
@@ -233,8 +239,9 @@ class HomeController extends Controller
                 "HomeTopics",
                 "HomePhotos",
                 "HomePartners",
-                "LatestNews"));
-
+                "LatestNews"
+            )
+        );
     }
 
     public function topic($section = 0, $id = 0)
@@ -261,7 +268,7 @@ class HomeController extends Controller
         if ($lang != "") {
             // Set Language
             App::setLocale($lang);
-            \Session::put('locale', $lang);
+            Session::put('locale', $lang);
         }
 
         // General Webmaster Settings
@@ -306,8 +313,11 @@ class HomeController extends Controller
             // Get current Category Section details
             $CurrentCategory = Section::find($cat);
             // Get a list of all Category ( for side bar )
-            $Categories = Section::where('webmaster_id', '=', $WebmasterSection->id)->where('father_id', '=',
-                '0')->where('status', 1)->orderby('webmaster_id', 'asc')->orderby('row_no', 'asc')->get();
+            $Categories = Section::where('webmaster_id', '=', $WebmasterSection->id)->where(
+                'father_id',
+                '=',
+                '0'
+            )->where('status', 1)->orderby('webmaster_id', 'asc')->orderby('row_no', 'asc')->get();
 
             if (!empty($CurrentCategory)) {
                 $category_topics = array();
@@ -328,15 +338,21 @@ class HomeController extends Controller
                 $TopicsMostViewed = Topic::where([['webmaster_id', '=', $WebmasterSection->id], ['status', 1], ['expire_date', '>=', date("Y-m-d")], ['expire_date', '<>', null]])->orWhere([['webmaster_id', '=', $WebmasterSection->id], ['status', 1], ['expire_date', null]])->whereIn('id', $category_topics)->orderby('visits', 'desc')->limit(3)->get();
             } else {
                 // Topics if NO Cat_ID
-                $Topics = Topic::where([['webmaster_id', '=', $WebmasterSection->id], ['status',
-                    1], ['expire_date', '>=', date("Y-m-d")], ['expire_date', '<>', null]])->orWhere([['webmaster_id', '=', $WebmasterSection->id], ['status', 1], ['expire_date', null]])->orderby('date', env("FRONTEND_TOPICS_ORDER", "asc"))->paginate(env('FRONTEND_PAGINATION'));
+                $Topics = Topic::where([['webmaster_id', '=', $WebmasterSection->id], [
+                    'status',
+                    1
+                ], ['expire_date', '>=', date("Y-m-d")], ['expire_date', '<>', null]])->orWhere([['webmaster_id', '=', $WebmasterSection->id], ['status', 1], ['expire_date', null]])->orderby('date', env("FRONTEND_TOPICS_ORDER", "asc"))->paginate(env('FRONTEND_PAGINATION'));
                 // Get Most Viewed
-                $TopicsMostViewed = Topic::where([['webmaster_id', '=', $WebmasterSection->id], ['status',
-                    1], ['expire_date', '>=', date("Y-m-d")], ['expire_date', '<>', null]])->orWhere([['webmaster_id', '=', $WebmasterSection->id], ['status', 1], ['expire_date', null]])->orderby('visits', 'desc')->limit(3)->get();
+                $TopicsMostViewed = Topic::where([['webmaster_id', '=', $WebmasterSection->id], [
+                    'status',
+                    1
+                ], ['expire_date', '>=', date("Y-m-d")], ['expire_date', '<>', null]])->orWhere([['webmaster_id', '=', $WebmasterSection->id], ['status', 1], ['expire_date', null]])->orderby('visits', 'desc')->limit(3)->get();
             }
 
-            $SideBanners = Banner::where('section_id', $WebmasterSettings->side_banners_section_id)->where('status',
-                1)->orderby('row_no', 'asc')->get();
+            $SideBanners = Banner::where('section_id', $WebmasterSettings->side_banners_section_id)->where(
+                'status',
+                1
+            )->orderby('row_no', 'asc')->get();
 
 
             // Get Latest News
@@ -379,7 +395,6 @@ class HomeController extends Controller
 
                 $PageDescription = Helper::GeneralSiteSettings($site_desc_var);
                 $PageKeywords = Helper::GeneralSiteSettings($site_keywords_var);
-
             }
             // .. end of .. Page Title, Description, Keywords
 
@@ -415,7 +430,8 @@ class HomeController extends Controller
                 }
             }
 
-            return view("frontEnd." . $view,
+            return view(
+                "frontEnd." . $view,
                 compact(
                     "WebmasterSettings",
                     "LatestNews",
@@ -429,13 +445,13 @@ class HomeController extends Controller
                     "PageKeywords",
                     "TopicsMostViewed",
                     "category_and_topics_count",
-                    "statics"));
-
+                    "statics"
+                )
+            );
         } else {
 
             return $this->SEOByLang($lang, $section);
         }
-
     }
 
     public function topicByLang($lang = "", $section = 0, $id = 0)
@@ -444,7 +460,7 @@ class HomeController extends Controller
         if ($lang != "") {
             // Set Language
             App::setLocale($lang);
-            \Session::put('locale', $lang);
+            Session::put('locale', $lang);
         }
 
         // General Webmaster Settings
@@ -452,15 +468,15 @@ class HomeController extends Controller
 
         // check for pages called by name not id
         switch ($section) {
-            case "about" :
+            case "about":
                 $id = 1;
                 $section = 1;
                 break;
-            case "privacy" :
+            case "privacy":
                 $id = 3;
                 $section = 1;
                 break;
-            case "terms" :
+            case "terms":
                 $id = 4;
                 $section = 1;
                 break;
@@ -517,14 +533,18 @@ class HomeController extends Controller
                     $CurrentCategory = Section::find($TopicCategory->section_id);
                 }
                 // Get a list of all Category ( for side bar )
-                $Categories = Section::where('webmaster_id', '=', $WebmasterSection->id)->where('status',
-                    1)->where('father_id', '=', '0')->orderby('webmaster_id', 'asc')->orderby('row_no', 'asc')->get();
+                $Categories = Section::where('webmaster_id', '=', $WebmasterSection->id)->where(
+                    'status',
+                    1
+                )->where('father_id', '=', '0')->orderby('webmaster_id', 'asc')->orderby('row_no', 'asc')->get();
 
                 // Get Most Viewed
                 $TopicsMostViewed = Topic::where([['webmaster_id', '=', $WebmasterSection->id], ['status', 1], ['expire_date', '>=', date("Y-m-d")], ['expire_date', '<>', null]])->orwhere([['webmaster_id', '=', $WebmasterSection->id], ['status', 1], ['expire_date', null]])->orderby('visits', 'desc')->limit(3)->get();
 
-                $SideBanners = Banner::where('section_id', $WebmasterSettings->side_banners_section_id)->where('status',
-                    1)->orderby('row_no', 'asc')->get();
+                $SideBanners = Banner::where('section_id', $WebmasterSettings->side_banners_section_id)->where(
+                    'status',
+                    1
+                )->orderby('row_no', 'asc')->get();
 
                 // Get Latest News
                 $LatestNews = $this->latest_topics($WebmasterSettings->latest_news_section_id);
@@ -554,7 +574,8 @@ class HomeController extends Controller
                 // .. end of .. Page Title, Description, Keywords
 
 
-                return view("frontEnd.topic",
+                return view(
+                    "frontEnd.topic",
                     compact(
                         "WebmasterSettings",
                         "LatestNews",
@@ -567,8 +588,9 @@ class HomeController extends Controller
                         "PageDescription",
                         "PageKeywords",
                         "TopicsMostViewed",
-                        "category_and_topics_count"));
-
+                        "category_and_topics_count"
+                    )
+                );
             } else {
                 return redirect()->action('HomeController@HomePage');
             }
@@ -599,7 +621,7 @@ class HomeController extends Controller
         if ($lang != "") {
             // Set Language
             App::setLocale($lang);
-            \Session::put('locale', $lang);
+            Session::put('locale', $lang);
         }
 
         // General Webmaster Settings
@@ -630,8 +652,11 @@ class HomeController extends Controller
             $CurrentCategory = "none";
             $WebmasterSection = "none";
             // Get a list of all Category ( for side bar )
-            $Categories = Section::where('father_id', '=',
-                '0')->where('status', 1)->orderby('webmaster_id', 'asc')->orderby('row_no', 'asc')->get();
+            $Categories = Section::where(
+                'father_id',
+                '=',
+                '0'
+            )->where('status', 1)->orderby('webmaster_id', 'asc')->orderby('row_no', 'asc')->get();
 
             // Topics if NO Cat_ID
             $Topics = Topic::where([['created_by', $User->id], ['status', 1], ['expire_date', '>=', date("Y-m-d")], ['expire_date', '<>', null]])->orwhere([['created_by', $User->id], ['status', 1], ['expire_date', null]])->orderby('row_no', 'asc')->paginate(env('FRONTEND_PAGINATION'));
@@ -639,8 +664,10 @@ class HomeController extends Controller
             $TopicsMostViewed = Topic::where([['created_by', $User->id], ['status', 1], ['expire_date', '>=', date("Y-m-d")], ['expire_date', '<>', null]])->orwhere([['created_by', $User->id], ['status', 1], ['expire_date', null]])->orderby('visits', 'desc')->limit(3)->get();
 
 
-            $SideBanners = Banner::where('section_id', $WebmasterSettings->side_banners_section_id)->where('status',
-                1)->orderby('row_no', 'asc')->get();
+            $SideBanners = Banner::where('section_id', $WebmasterSettings->side_banners_section_id)->where(
+                'status',
+                1
+            )->orderby('row_no', 'asc')->get();
 
 
             // Get Latest News
@@ -657,7 +684,8 @@ class HomeController extends Controller
             // .. end of .. Page Title, Description, Keywords
 
             // Send all to the view
-            return view("frontEnd.topics",
+            return view(
+                "frontEnd.topics",
                 compact(
                     "WebmasterSettings",
                     "LatestNews",
@@ -671,13 +699,13 @@ class HomeController extends Controller
                     "PageDescription",
                     "PageKeywords",
                     "TopicsMostViewed",
-                    "category_and_topics_count"));
-
+                    "category_and_topics_count"
+                )
+            );
         } else {
             // If no section name/ID go back to home
             return redirect()->action('HomeController@HomePage');
         }
-
     }
 
     public function searchTopics()
@@ -712,8 +740,11 @@ class HomeController extends Controller
             // Get current Category Section details
             $CurrentCategory = "none";
             // Get a list of all Category ( for side bar )
-            $Categories = Section::where('father_id', '=',
-                '0')->where('status', 1)->orderby('webmaster_id', 'asc')->orderby('row_no', 'asc')->get();
+            $Categories = Section::where(
+                'father_id',
+                '=',
+                '0'
+            )->where('status', 1)->orderby('webmaster_id', 'asc')->orderby('row_no', 'asc')->get();
 
             // Topics if NO Cat_ID
             $Topics = Topic::select("id")->where('title_' . Helper::currentLanguage()->code, 'like', '%' . $search_word . '%')
@@ -731,8 +762,10 @@ class HomeController extends Controller
             $TopicsMostViewed = Topic::where([['status', 1], ['expire_date', '>=', date("Y-m-d")], ['expire_date', '<>', null]])->orwhere([['status', 1], ['expire_date', null]])->orderby('visits', 'desc')->limit(3)->get();
 
 
-            $SideBanners = Banner::where('section_id', $WebmasterSettings->side_banners_section_id)->where('status',
-                1)->orderby('row_no', 'asc')->get();
+            $SideBanners = Banner::where('section_id', $WebmasterSettings->side_banners_section_id)->where(
+                'status',
+                1
+            )->orderby('row_no', 'asc')->get();
 
 
             // Get Latest News
@@ -756,7 +789,8 @@ class HomeController extends Controller
                 }
             }
 
-            return view("frontEnd." . $view,
+            return view(
+                "frontEnd." . $view,
                 compact(
                     "WebmasterSettings",
                     "LatestNews",
@@ -770,13 +804,13 @@ class HomeController extends Controller
                     "PageDescription",
                     "PageKeywords",
                     "TopicsMostViewed",
-                    "category_and_topics_count"));
-
+                    "category_and_topics_count"
+                )
+            );
         } else {
             // If no section name/ID go back to home
             return redirect()->action('HomeController@HomePage');
         }
-
     }
 
     public function ContactPage()
@@ -790,7 +824,7 @@ class HomeController extends Controller
         if ($lang != "") {
             // Set Language
             App::setLocale($lang);
-            \Session::put('locale', $lang);
+            Session::put('locale', $lang);
         }
         // General Webmaster Settings
         $WebmasterSettings = WebmasterSetting::find(1);
@@ -813,15 +847,20 @@ class HomeController extends Controller
                 // Get current Category Section details
                 $CurrentCategory = Section::find($Topic->section_id);
                 // Get a list of all Category ( for side bar )
-                $Categories = Section::where('webmaster_id', '=', $WebmasterSection->id)->where('father_id', '=',
-                    '0')->where('status', 1)->orderby('webmaster_id', 'asc')->orderby('row_no', 'asc')->get();
+                $Categories = Section::where('webmaster_id', '=', $WebmasterSection->id)->where(
+                    'father_id',
+                    '=',
+                    '0'
+                )->where('status', 1)->orderby('webmaster_id', 'asc')->orderby('row_no', 'asc')->get();
 
                 // Get Most Viewed
                 $TopicsMostViewed = Topic::where([['webmaster_id', '=', $WebmasterSection->id], ['status', 1], ['expire_date', '>=', date("Y-m-d")], ['expire_date', '<>', null]])->orwhere([['webmaster_id', '=', $WebmasterSection->id], ['status', 1], ['expire_date', null]])->orderby('visits', 'desc')->limit(3)->get();
 
 
-                $SideBanners = Banner::where('section_id', $WebmasterSettings->side_banners_section_id)->where('status',
-                    1)->orderby('row_no', 'asc')->get();
+                $SideBanners = Banner::where('section_id', $WebmasterSettings->side_banners_section_id)->where(
+                    'status',
+                    1
+                )->orderby('row_no', 'asc')->get();
 
                 // Get Latest News
                 $LatestNews = $this->latest_topics($WebmasterSettings->latest_news_section_id);
@@ -851,7 +890,8 @@ class HomeController extends Controller
                 }
                 // .. end of .. Page Title, Description, Keywords
 
-                return view("frontEnd.contact",
+                return view(
+                    "frontEnd.contact",
                     compact(
                         "WebmasterSettings",
                         "LatestNews",
@@ -863,15 +903,15 @@ class HomeController extends Controller
                         "PageTitle",
                         "PageDescription",
                         "PageKeywords",
-                        "TopicsMostViewed"));
-
+                        "TopicsMostViewed"
+                    )
+                );
             } else {
                 return redirect()->action('HomeController@HomePage');
             }
         } else {
             return redirect()->action('HomeController@HomePage');
         }
-
     }
 
     public function ContactPageSubmit(Request $request)
@@ -923,7 +963,6 @@ class HomeController extends Controller
                     ]
                 ));
             } catch (\Exception $e) {
-
             }
         }
 
@@ -1016,7 +1055,6 @@ class HomeController extends Controller
                         ]
                     ));
                 } catch (\Exception $e) {
-
                 }
             }
         }
@@ -1081,10 +1119,8 @@ class HomeController extends Controller
                         ]
                     ));
                 } catch (\Exception $e) {
-
                 }
             }
-
         }
 
         return "OK";
@@ -1163,15 +1199,17 @@ class HomeController extends Controller
 
             // end of Page Title, Description, Keywords
 
-            return view("frontEnd.form_page",
+            return view(
+                "frontEnd.form_page",
                 compact(
                     "WebmasterSettings",
                     "LatestNews",
                     "WebmasterSection",
                     "PageTitle",
                     "PageDescription",
-                    "PageKeywords"));
-
+                    "PageKeywords"
+                )
+            );
         } else {
             return $this->SEOByLang($lang, $section);
         }
@@ -1207,8 +1245,10 @@ class HomeController extends Controller
             $formFileName = "photo_file";
             $fileFinalName = "";
             if ($request->$formFileName != "") {
-                $fileFinalName = time() . rand(1111,
-                        9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                $fileFinalName = time() . rand(
+                    1111,
+                    9999
+                ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                 $request->file($formFileName)->move($uploadPath, $fileFinalName);
             }
 
@@ -1216,8 +1256,10 @@ class HomeController extends Controller
             $formFileName = "attach_file";
             $attachFileFinalName = "";
             if ($request->$formFileName != "") {
-                $attachFileFinalName = time() . rand(1111,
-                        9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                $attachFileFinalName = time() . rand(
+                    1111,
+                    9999
+                ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                 $request->file($formFileName)->move($uploadPath, $attachFileFinalName);
             }
 
@@ -1238,7 +1280,6 @@ class HomeController extends Controller
                     $Topic->{"seo_title_" . $ActiveLanguage->code} = $request->title;
                     $Topic->{"seo_description_" . $ActiveLanguage->code} = mb_substr(strip_tags(stripslashes($request->details)), 0, 165, 'UTF-8');
                     $Topic->{"seo_url_slug_" . $ActiveLanguage->code} = Helper::URLSlug($request->title, "topic", 0);
-
                 }
             }
             $Topic->date = Helper::dateForDB($request->date);
@@ -1283,8 +1324,10 @@ class HomeController extends Controller
                         if ($customField->type == 8 || $customField->type == 9 || $customField->type == 10) {
                             // upload file
                             if ($request->$field_value_var != "") {
-                                $uploadedFileFinalName = time() . rand(1111,
-                                        9999) . '.' . $request->file($field_value_var)->getClientOriginalExtension();
+                                $uploadedFileFinalName = time() . rand(
+                                    1111,
+                                    9999
+                                ) . '.' . $request->file($field_value_var)->getClientOriginalExtension();
                                 $request->file($field_value_var)->move($uploadPath, $uploadedFileFinalName);
                                 $field_value = $uploadedFileFinalName;
                             }
@@ -1429,7 +1472,6 @@ class HomeController extends Controller
                     }
                 }
             } catch (\Exception $e) {
-
             }
 
             $message_details = "<h3>" . $tpc_title . "</h3>" . $FromTopicTitle . $fields_details . "<hr><a href='" . route("topicsEdit", [@$WebmasterSection->id, @$Topic->id]) . "'>View All Details</a>";
@@ -1443,7 +1485,6 @@ class HomeController extends Controller
                 ]
             ));
         } catch (\Exception $e) {
-
         }
     }
 }

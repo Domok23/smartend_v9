@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Language;
-use App\Models\Section;
 use App\Models\Topic;
+use App\Helpers\Helper;
+use App\Models\Section;
+use App\Models\Language;
 use App\Models\WebmasterSection;
-use Helper;
+use Illuminate\Support\Facades\Session;
 
 
 class SiteMapController extends Controller
@@ -21,7 +22,7 @@ class SiteMapController extends Controller
     {
         $lang = $this->getLanguage($lang);
 
-        \Session::put('locale', $lang);
+        Session::put('locale', $lang);
 
         $SiteMapDetails = "";
         $slug_var = "seo_url_slug_" . $lang;

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -18,32 +19,38 @@
         .fm-navbar div div div:last-child {
             display: none;
         }
-        .fm .fm-body{
+
+        .fm .fm-body {
             border-top: 1px solid #ddd;
             border-bottom: 1px solid #ddd;
         }
-        .fm-info-block{
+
+        .fm-info-block {
             border-bottom: none;
         }
+
         .fm-tree {
             border-right: 1px solid #ddd;
         }
+
         .fm-breadcrumb .breadcrumb.active-manager {
             background-color: #c5efea;
         }
     </style>
 </head>
-<body>
-<div id="fm-main-block">
-    <div id="fm"></div>
-</div>
 
-<!-- File manager -->
-<script src="{{ asset('assets/file-manager/js/file-manager.js') }}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('fm-main-block').setAttribute('style', 'height:' + window.innerHeight + 'px');
-    });
-</script>
+<body>
+    <div id="fm-main-block">
+        <div id="fm"></div>
+    </div>
+
+    <!-- File manager -->
+    <script src="{{ asset('assets/file-manager/js/file-manager.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('fm-main-block').setAttribute('style', 'height:' + window.innerHeight + 'px');
+        });
+    </script>
 </body>
+
 </html>

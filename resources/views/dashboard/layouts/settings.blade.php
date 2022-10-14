@@ -42,27 +42,26 @@
                 </label>
             </div>
             <br>
-            @if(count(Helper::languagesList()) >0)
+            @if (count(Helper::languagesList()) > 0)
                 <p class="m-b-xs">{{ __('backend.languages') }}:</p>
                 <div style="max-height: 200px;overflow-y: scroll">
-                @foreach(Helper::languagesList() as $ActiveLanguage)
-                    <div>
-                        <a href="{{ route("localeChange",$ActiveLanguage->code) }}"
-                           class="btn btn-xs light btn-block m-b-xs text-left p-x-1">
-                            @if($ActiveLanguage->icon !="")
-                                <img
-                                    src="{{ asset('assets/dashboard/images/flags/'.$ActiveLanguage->icon.".svg") }}"
-                                    alt="" class="w-20">
-                            @endif
-                            {{ $ActiveLanguage->title }}
-                        </a>
-                    </div>
-                @endforeach
+                    @foreach (Helper::languagesList() as $ActiveLanguage)
+                        <div>
+                            <a href="{{ route('localeChange', $ActiveLanguage->code) }}"
+                                class="btn btn-xs light btn-block m-b-xs text-left p-x-1">
+                                @if ($ActiveLanguage->icon != '')
+                                    <img src="{{ asset('assets/dashboard/images/flags/' . $ActiveLanguage->icon . '.svg') }}"
+                                        alt="" class="w-20">
+                                @endif
+                                {{ $ActiveLanguage->title }}
+                            </a>
+                        </div>
+                    @endforeach
                 </div>
             @endif
             <div class="m-t-1">
                 <a href="{{ route('cacheClear') }}" class="btn btn-sm dark btn-block"
-                   onclick="return confirm('{{ __('backend.cashClearMsg') }}')"><small>{!!  __('backend.cashClear') !!}</small></a>
+                    onclick="return confirm('{{ __('backend.cashClearMsg') }}')"><small>{!! __('backend.cashClear') !!}</small></a>
 
             </div>
         </div>

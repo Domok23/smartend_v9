@@ -2,27 +2,28 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
-use App\Mail\NotificationEmail;
-use App\Models\AttachFile;
-use App\Models\Comment;
-use App\Http\Requests;
 use App\Models\Map;
 use App\Models\Photo;
-use App\Models\RelatedTopic;
-use App\Models\Section;
 use App\Models\Topic;
-use App\Models\TopicCategory;
+use App\Http\Requests;
+use App\Helpers\Helper;
+use App\Models\Comment;
+use App\Models\Section;
+use App\Models\AttachFile;
 use App\Models\TopicField;
-use App\Models\WebmasterSection;
-use Auth;
-use File;
-use Helper;
+use App\Models\RelatedTopic;
 use Illuminate\Http\Request;
-use Redirect;
-use Form;
-use URL;
-use Mail;
+use App\Models\TopicCategory;
+use App\Mail\NotificationEmail;
+use App\Models\WebmasterSection;
+use Illuminate\Support\Facades\URL;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cookie;
+use Collective\Html\FormFacade as Form;
+use Illuminate\Support\Facades\Redirect;
 
 class TopicsController extends Controller
 {
@@ -33,7 +34,6 @@ class TopicsController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-
     }
 
     public function index($webmasterId)
@@ -94,7 +94,7 @@ class TopicsController extends Controller
         $start = $request->input('start');
         $dir = $request->input('order.0.dir');
 
-        \Cookie::queue("user_documents_page_order", 3, 31104000);
+        Cookie::queue("user_documents_page_order", 3, 31104000);
 
         //search inputs
         $folder_id = $request->input('folder_id');
@@ -227,7 +227,7 @@ class TopicsController extends Controller
 
         $totalData = $Topics->count();
         $totalFiltered = $totalData;
-//order, paginate
+        //order, paginate
         $Topics = $Topics->offset($start)
             ->limit($limit)
             ->orderBy($order, $dir)
@@ -257,11 +257,8 @@ class TopicsController extends Controller
                             if ($cat_title != "") {
                                 $section .= "<span class='label dker b-a text-sm'>" . $cat_title . "</span> ";
                             }
-
-                        } catch (Exception $e) {
-
+                        } catch (\Exception $e) {
                         }
-
                     }
                     if ($section == "") {
                         $section = "<span style='color: orangered'><i>" . __('backend.topicDeletedSection') . "</i></span>";
@@ -321,11 +318,9 @@ class TopicsController extends Controller
                                 if ($customField->type == 12) {
                                     $CF_Vimeo_id = Helper::Get_vimeo_video_id($cf_saved_val);
                                     $cf_data = "<a target='_blank' href='https://player.vimeo.com/video/$CF_Vimeo_id?title=0&amp;byline=0'><i class='fa fa-play'></i></a>";
-
                                 } elseif ($customField->type == 11) {
                                     $CF_Youtube_id = Helper::Get_youtube_video_id($cf_saved_val);
                                     $cf_data = "<a target='_blank' href='https://www.youtube.com/embed/$CF_Youtube_id'><i class='fa fa-play'></i></a>";
-
                                 } elseif ($customField->type == 10) {
                                     $cf_data = "<a target='_blank' href='" . URL::to('uploads/topics/' . $cf_saved_val) . "'><i class='fa fa-play'></i></a>";
                                 } elseif ($customField->type == 9) {
@@ -424,7 +419,6 @@ class TopicsController extends Controller
         );
 
         echo json_encode($json_data);
-
     }
 
     public function print(Request $request, $webmasterId)
@@ -433,7 +427,7 @@ class TopicsController extends Controller
         $title_var = "title_" . @Helper::currentLanguage()->code;
         $title_var2 = "title_" . env('DEFAULT_LANGUAGE');
 
-        \Cookie::queue("user_documents_page_order", 3, 31104000);
+        Cookie::queue("user_documents_page_order", 3, 31104000);
 
         //search inputs
         $folder_id = $request->input('folder_id');
@@ -510,11 +504,16 @@ class TopicsController extends Controller
         //Webmaster Topic Details
         $WebmasterSection = WebmasterSection::find($webmasterId);
         if (!empty($WebmasterSection)) {
-            $fatherSections = Section::where('webmaster_id', '=', $webmasterId)->where('father_id', '=',
-                '0')->orderby('row_no', 'asc')->get();
+            $fatherSections = Section::where('webmaster_id', '=', $webmasterId)->where(
+                'father_id',
+                '=',
+                '0'
+            )->orderby('row_no', 'asc')->get();
 
-            return view("dashboard.topics.create",
-                compact("GeneralWebmasterSections", "WebmasterSection", "fatherSections"));
+            return view(
+                "dashboard.topics.create",
+                compact("GeneralWebmasterSections", "WebmasterSection", "fatherSections")
+            );
         } else {
             return redirect()->route('NotFound');
         }
@@ -543,8 +542,10 @@ class TopicsController extends Controller
             $formFileName = "photo_file";
             $fileFinalName = "";
             if ($request->$formFileName != "") {
-                $fileFinalName = time() . rand(1111,
-                        9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                $fileFinalName = time() . rand(
+                    1111,
+                    9999
+                ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                 $path = $this->uploadPath;
                 $request->file($formFileName)->move($path, $fileFinalName);
             }
@@ -552,8 +553,10 @@ class TopicsController extends Controller
             $formFileName = "audio_file";
             $audioFileFinalName = "";
             if ($request->$formFileName != "") {
-                $audioFileFinalName = time() . rand(1111,
-                        9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                $audioFileFinalName = time() . rand(
+                    1111,
+                    9999
+                ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                 $path = $this->uploadPath;
                 $request->file($formFileName)->move($path, $audioFileFinalName);
             }
@@ -561,8 +564,10 @@ class TopicsController extends Controller
             $formFileName = "attach_file";
             $attachFileFinalName = "";
             if ($request->$formFileName != "") {
-                $attachFileFinalName = time() . rand(1111,
-                        9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                $attachFileFinalName = time() . rand(
+                    1111,
+                    9999
+                ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                 $path = $this->uploadPath;
                 $request->file($formFileName)->move($path, $attachFileFinalName);
             }
@@ -577,12 +582,13 @@ class TopicsController extends Controller
                 $formFileName = "video_file";
                 $videoFileFinalName = "";
                 if ($request->$formFileName != "") {
-                    $videoFileFinalName = time() . rand(1111,
-                            9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                    $videoFileFinalName = time() . rand(
+                        1111,
+                        9999
+                    ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                     $path = $this->uploadPath;
                     $request->file($formFileName)->move($path, $videoFileFinalName);
                 }
-
             }
             // End of Upload Files
 
@@ -601,7 +607,6 @@ class TopicsController extends Controller
                     $Topic->{"seo_title_" . $ActiveLanguage->code} = $request->{"title_" . $ActiveLanguage->code};
                     $Topic->{"seo_description_" . $ActiveLanguage->code} = mb_substr(strip_tags(stripslashes($request->{"details_" . $ActiveLanguage->code})), 0, 165, 'UTF-8');
                     $Topic->{"seo_url_slug_" . $ActiveLanguage->code} = Helper::URLSlug($request->{"title_" . $ActiveLanguage->code}, "topic", 0);
-
                 }
             }
             $Topic->date = Helper::dateForDB($request->date);
@@ -660,8 +665,10 @@ class TopicsController extends Controller
                             if ($customField->type == 8 || $customField->type == 9 || $customField->type == 10) {
                                 // upload file
                                 if ($request->$field_value_var != "") {
-                                    $uploadedFileFinalName = time() . rand(1111,
-                                            9999) . '.' . $request->file($field_value_var)->getClientOriginalExtension();
+                                    $uploadedFileFinalName = time() . rand(
+                                        1111,
+                                        9999
+                                    ) . '.' . $request->file($field_value_var)->getClientOriginalExtension();
                                     $path = $this->uploadPath;
                                     $request->file($field_value_var)->move($path, $uploadedFileFinalName);
                                     $field_value = $uploadedFileFinalName;
@@ -694,13 +701,16 @@ class TopicsController extends Controller
             $this->send_notification($WebmasterSection, $Topic, "New");
 
             if (@Auth::user()->permissionsGroup->edit_status) {
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $Topic->id])->with('doneMessage',
-                    __('backend.addDone'));
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $Topic->id])->with(
+                    'doneMessage',
+                    __('backend.addDone')
+                );
             } else {
-                return redirect()->action('Dashboard\TopicsController@index')->with('doneMessage',
-                    __('backend.addDone'));
+                return redirect()->action('Dashboard\TopicsController@index')->with(
+                    'doneMessage',
+                    __('backend.addDone')
+                );
             }
-
         } else {
             return redirect()->route('NotFound');
         }
@@ -728,11 +738,16 @@ class TopicsController extends Controller
                 //Topic Topics Details
                 $WebmasterSection = WebmasterSection::find($Topics->webmaster_id);
 
-                $fatherSections = Section::where('webmaster_id', '=', $webmasterId)->where('father_id', '=',
-                    '0')->orderby('row_no', 'asc')->get();
+                $fatherSections = Section::where('webmaster_id', '=', $webmasterId)->where(
+                    'father_id',
+                    '=',
+                    '0'
+                )->orderby('row_no', 'asc')->get();
 
-                return view("dashboard.topics.edit",
-                    compact("Topics", "GeneralWebmasterSections", "WebmasterSection", "fatherSections"));
+                return view(
+                    "dashboard.topics.edit",
+                    compact("Topics", "GeneralWebmasterSections", "WebmasterSection", "fatherSections")
+                );
             } else {
                 return redirect()->action('Dashboard\TopicsController@index', $webmasterId);
             }
@@ -766,8 +781,10 @@ class TopicsController extends Controller
                         File::delete($this->uploadPath . $Topic->$formFileName);
                     }
 
-                    $fileFinalName = time() . rand(1111,
-                            9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                    $fileFinalName = time() . rand(
+                        1111,
+                        9999
+                    ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                     $path = $this->uploadPath;
                     $request->file($formFileName)->move($path, $fileFinalName);
                 }
@@ -781,8 +798,10 @@ class TopicsController extends Controller
                         File::delete($this->uploadPath . $Topic->$formFileName);
                     }
 
-                    $audioFileFinalName = time() . rand(1111,
-                            9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                    $audioFileFinalName = time() . rand(
+                        1111,
+                        9999
+                    ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                     $path = $this->uploadPath;
                     $request->file($formFileName)->move($path, $audioFileFinalName);
                 }
@@ -794,8 +813,10 @@ class TopicsController extends Controller
                     if ($Topic->$formFileName != "") {
                         File::delete($this->uploadPath . $Topic->$formFileName);
                     }
-                    $attachFileFinalName = time() . rand(1111,
-                            9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                    $attachFileFinalName = time() . rand(
+                        1111,
+                        9999
+                    ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                     $path = $this->uploadPath;
                     $request->file($formFileName)->move($path, $attachFileFinalName);
                 }
@@ -814,12 +835,13 @@ class TopicsController extends Controller
                         if ($Topic->$formFileName != "") {
                             File::delete($this->uploadPath . $Topic->$formFileName);
                         }
-                        $videoFileFinalName = time() . rand(1111,
-                                9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                        $videoFileFinalName = time() . rand(
+                            1111,
+                            9999
+                        ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                         $path = $this->uploadPath;
                         $request->file($formFileName)->move($path, $videoFileFinalName);
                     }
-
                 }
                 // End of Upload Files
                 foreach (Helper::languagesList() as $ActiveLanguage) {
@@ -913,8 +935,10 @@ class TopicsController extends Controller
                             if ($customField->type == 8 || $customField->type == 9 || $customField->type == 10) {
                                 // upload file
                                 if ($request->$field_value_var != "") {
-                                    $uploadedFileFinalName = time() . rand(1111,
-                                            9999) . '.' . $request->file($field_value_var)->getClientOriginalExtension();
+                                    $uploadedFileFinalName = time() . rand(
+                                        1111,
+                                        9999
+                                    ) . '.' . $request->file($field_value_var)->getClientOriginalExtension();
                                     $path = $this->uploadPath;
                                     $request->file($field_value_var)->move($path, $uploadedFileFinalName);
                                     $field_value = $uploadedFileFinalName;
@@ -958,8 +982,10 @@ class TopicsController extends Controller
                 $this->send_notification($WebmasterSection, $Topic, "Update");
 
 
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                    __('backend.saveDone'));
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'doneMessage',
+                    __('backend.saveDone')
+                );
             } else {
                 return redirect()->action('Dashboard\TopicsController@index', $webmasterId);
             }
@@ -989,11 +1015,16 @@ class TopicsController extends Controller
                 //Topic Topics Details
                 $WebmasterSection = WebmasterSection::find($Topic->webmaster_id);
 
-                $fatherSections = Section::where('webmaster_id', '=', $webmasterId)->where('father_id', '=',
-                    '0')->orderby('row_no', 'asc')->get();
+                $fatherSections = Section::where('webmaster_id', '=', $webmasterId)->where(
+                    'father_id',
+                    '=',
+                    '0'
+                )->orderby('row_no', 'asc')->get();
 
-                return view("dashboard.topics.view",
-                    compact("Topic", "GeneralWebmasterSections", "WebmasterSection", "fatherSections"));
+                return view(
+                    "dashboard.topics.view",
+                    compact("Topic", "GeneralWebmasterSections", "WebmasterSection", "fatherSections")
+                );
             } else {
                 return redirect()->action('Dashboard\TopicsController@index', $webmasterId);
             }
@@ -1086,17 +1117,14 @@ class TopicsController extends Controller
                         $Topic->save();
                     }
                 }
-
             } else {
                 if ($request->ids != "") {
                     if ($request->action == "activate") {
                         Topic::wherein('id', $request->ids)
                             ->update(['status' => 1]);
-
                     } elseif ($request->action == "block") {
                         Topic::wherein('id', $request->ids)
                             ->update(['status' => 0]);
-
                     } elseif ($request->action == "delete") {
                         // Check Permissions
                         if (!@Auth::user()->permissionsGroup->delete_status) {
@@ -1160,12 +1188,13 @@ class TopicsController extends Controller
                         //Remove Topics
                         Topic::wherein('id', $request->ids)
                             ->delete();
-
                     }
                 }
             }
-            return redirect()->action('Dashboard\TopicsController@index', $webmasterId)->with('doneMessage',
-                __('backend.saveDone'));
+            return redirect()->action('Dashboard\TopicsController@index', $webmasterId)->with(
+                'doneMessage',
+                __('backend.saveDone')
+            );
         } else {
             return redirect()->route('NotFound');
         }
@@ -1188,8 +1217,10 @@ class TopicsController extends Controller
                 }
                 $Topic->updated_by = Auth::user()->id;
                 $Topic->save();
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                    __('backend.saveDone'))->with('activeTab', 'seo');
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'doneMessage',
+                    __('backend.saveDone')
+                )->with('activeTab', 'seo');
             } else {
                 return redirect()->action('Dashboard\TopicsController@index', $webmasterId);
             }
@@ -1219,10 +1250,14 @@ class TopicsController extends Controller
             $fileFinalName = "";
             $fileFinalTitle = ""; // Original file name without extension
             if ($request->$formFileName != "") {
-                $fileFinalTitle = basename($request->file($formFileName)->getClientOriginalName(),
-                    '.' . $request->file($formFileName)->getClientOriginalExtension());
-                $fileFinalName = time() . rand(1111,
-                        9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                $fileFinalTitle = basename(
+                    $request->file($formFileName)->getClientOriginalName(),
+                    '.' . $request->file($formFileName)->getClientOriginalExtension()
+                );
+                $fileFinalName = time() . rand(
+                    1111,
+                    9999
+                ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                 $path = $this->uploadPath;
                 $request->file($formFileName)->move($path, $fileFinalName);
             }
@@ -1263,8 +1298,10 @@ class TopicsController extends Controller
 
 
                 $Photo->delete();
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                    __('backend.deleteDone'))->with('activeTab', 'photos');
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'doneMessage',
+                    __('backend.deleteDone')
+                )->with('activeTab', 'photos');
             } else {
                 return redirect()->action('Dashboard\TopicsController@index', $webmasterId);
             }
@@ -1287,7 +1324,6 @@ class TopicsController extends Controller
                         $Photo->save();
                     }
                 }
-
             } else {
                 if ($request->ids != "") {
                     if ($request->action == "delete") {
@@ -1305,12 +1341,13 @@ class TopicsController extends Controller
 
                         Photo::wherein('id', $request->ids)
                             ->delete();
-
                     }
                 }
             }
-            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                __('backend.saveDone'))->with('activeTab', 'photos');
+            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                'doneMessage',
+                __('backend.saveDone')
+            )->with('activeTab', 'photos');
         } else {
             return redirect()->route('NotFound');
         }
@@ -1336,8 +1373,10 @@ class TopicsController extends Controller
             if (!@Auth::user()->permissionsGroup->add_status) {
                 return Redirect::to(route('NoPermission'))->send();
             }
-            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab',
-                'comments')->with('commentST', 'create');
+            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                'activeTab',
+                'comments'
+            )->with('commentST', 'create');
         } else {
             return redirect()->route('NotFound');
         }
@@ -1373,8 +1412,10 @@ class TopicsController extends Controller
             $Comment->created_by = Auth::user()->id;
             $Comment->save();
 
-            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                __('backend.saveDone'))->with('activeTab', 'comments');
+            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                'doneMessage',
+                __('backend.saveDone')
+            )->with('activeTab', 'comments');
         } else {
             return redirect()->route('NotFound');
         }
@@ -1391,8 +1432,10 @@ class TopicsController extends Controller
 
             $Comment = Comment::find($comment_id);
             if (!empty($Comment)) {
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab',
-                    'comments')->with('commentST', 'edit')->with('Comment', $Comment);
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'activeTab',
+                    'comments'
+                )->with('commentST', 'edit')->with('Comment', $Comment);
             } else {
                 return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab', 'comments');
             }
@@ -1421,8 +1464,10 @@ class TopicsController extends Controller
                 $Comment->status = $request->status;
                 $Comment->updated_by = Auth::user()->id;
                 $Comment->save();
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                    __('backend.saveDone'))->with('activeTab', 'comments');
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'doneMessage',
+                    __('backend.saveDone')
+                )->with('activeTab', 'comments');
             } else {
                 return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab', 'comments');
             }
@@ -1443,8 +1488,10 @@ class TopicsController extends Controller
             $Comment = Comment::find($comment_id);
             if (!empty($Comment)) {
                 $Comment->delete();
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                    __('backend.deleteDone'))->with('activeTab', 'comments');
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'doneMessage',
+                    __('backend.deleteDone')
+                )->with('activeTab', 'comments');
             } else {
                 return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab', 'comments');
             }
@@ -1472,11 +1519,9 @@ class TopicsController extends Controller
                     if ($request->action == "activate") {
                         Comment::wherein('id', $request->ids)
                             ->update(['status' => 1]);
-
                     } elseif ($request->action == "block") {
                         Comment::wherein('id', $request->ids)
                             ->update(['status' => 0]);
-
                     } elseif ($request->action == "delete") {
                         // Check Permissions
                         if (!@Auth::user()->permissionsGroup->delete_status) {
@@ -1485,12 +1530,13 @@ class TopicsController extends Controller
 
                         Comment::wherein('id', $request->ids)
                             ->delete();
-
                     }
                 }
             }
-            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                __('backend.saveDone'))->with('activeTab', 'comments');
+            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                'doneMessage',
+                __('backend.saveDone')
+            )->with('activeTab', 'comments');
         } else {
             return redirect()->route('NotFound');
         }
@@ -1516,8 +1562,10 @@ class TopicsController extends Controller
             if (!@Auth::user()->permissionsGroup->add_status) {
                 return Redirect::to(route('NoPermission'))->send();
             }
-            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab',
-                'maps')->with('mapST', 'create');
+            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                'activeTab',
+                'maps'
+            )->with('mapST', 'create');
         } else {
             return redirect()->route('NotFound');
         }
@@ -1557,8 +1605,10 @@ class TopicsController extends Controller
             $Map->created_by = Auth::user()->id;
             $Map->save();
 
-            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                __('backend.saveDone'))->with('activeTab', 'maps');
+            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                'doneMessage',
+                __('backend.saveDone')
+            )->with('activeTab', 'maps');
         } else {
             return redirect()->route('NotFound');
         }
@@ -1575,8 +1625,10 @@ class TopicsController extends Controller
 
             $Map = Map::find($map_id);
             if (!empty($Map)) {
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab',
-                    'maps')->with('mapST', 'edit')->with('Map', $Map);
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'activeTab',
+                    'maps'
+                )->with('mapST', 'edit')->with('Map', $Map);
             } else {
                 return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab', 'maps');
             }
@@ -1610,8 +1662,10 @@ class TopicsController extends Controller
                 $Map->status = $request->status;
                 $Map->updated_by = Auth::user()->id;
                 $Map->save();
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                    __('backend.saveDone'))->with('activeTab', 'maps');
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'doneMessage',
+                    __('backend.saveDone')
+                )->with('activeTab', 'maps');
             } else {
                 return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab', 'maps');
             }
@@ -1632,8 +1686,10 @@ class TopicsController extends Controller
             $Map = Map::find($map_id);
             if (!empty($Map)) {
                 $Map->delete();
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                    __('backend.deleteDone'))->with('activeTab', 'maps');
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'doneMessage',
+                    __('backend.deleteDone')
+                )->with('activeTab', 'maps');
             } else {
                 return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab', 'maps');
             }
@@ -1661,11 +1717,9 @@ class TopicsController extends Controller
                     if ($request->action == "activate") {
                         Map::wherein('id', $request->ids)
                             ->update(['status' => 1]);
-
                     } elseif ($request->action == "block") {
                         Map::wherein('id', $request->ids)
                             ->update(['status' => 0]);
-
                     } elseif ($request->action == "delete") {
 
                         // Check Permissions
@@ -1675,12 +1729,13 @@ class TopicsController extends Controller
 
                         Map::wherein('id', $request->ids)
                             ->delete();
-
                     }
                 }
             }
-            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                __('backend.saveDone'))->with('activeTab', 'maps');
+            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                'doneMessage',
+                __('backend.saveDone')
+            )->with('activeTab', 'maps');
         } else {
             return redirect()->route('NotFound');
         }
@@ -1706,8 +1761,10 @@ class TopicsController extends Controller
             if (!@Auth::user()->permissionsGroup->add_status) {
                 return Redirect::to(route('NoPermission'))->send();
             }
-            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab',
-                'files')->with('fileST', 'create');
+            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                'activeTab',
+                'files'
+            )->with('fileST', 'create');
         } else {
             return redirect()->route('NotFound');
         }
@@ -1726,8 +1783,10 @@ class TopicsController extends Controller
             $formFileName = "file";
             $fileFinalName = "";
             if ($request->$formFileName != "") {
-                $fileFinalName = time() . rand(1111,
-                        9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                $fileFinalName = time() . rand(
+                    1111,
+                    9999
+                ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                 $path = $this->uploadPath;
                 $request->file($formFileName)->move($path, $fileFinalName);
             }
@@ -1752,8 +1811,10 @@ class TopicsController extends Controller
                 $AttachFile->created_by = Auth::user()->id;
                 $AttachFile->save();
 
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                    __('backend.saveDone'))->with('activeTab', 'files');
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'doneMessage',
+                    __('backend.saveDone')
+                )->with('activeTab', 'files');
             } else {
                 return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab', 'files');
             }
@@ -1773,8 +1834,10 @@ class TopicsController extends Controller
 
             $AttachFile = AttachFile::find($file_id);
             if (!empty($AttachFile)) {
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab',
-                    'files')->with('fileST', 'edit')->with('AttachFile', $AttachFile);
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'activeTab',
+                    'files'
+                )->with('fileST', 'edit')->with('AttachFile', $AttachFile);
             } else {
                 return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab', 'files');
             }
@@ -1802,8 +1865,10 @@ class TopicsController extends Controller
                         File::delete($this->uploadPath . $AttachFile->$formFileName);
                     }
 
-                    $fileFinalName = time() . rand(1111,
-                            9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+                    $fileFinalName = time() . rand(
+                        1111,
+                        9999
+                    ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
                     $path = $this->uploadPath;
                     $request->file($formFileName)->move($path, $fileFinalName);
                 }
@@ -1819,8 +1884,10 @@ class TopicsController extends Controller
                 $AttachFile->updated_by = Auth::user()->id;
                 $AttachFile->save();
 
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                    __('backend.saveDone'))->with('activeTab', 'files');
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'doneMessage',
+                    __('backend.saveDone')
+                )->with('activeTab', 'files');
             } else {
                 return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab', 'files');
             }
@@ -1846,8 +1913,10 @@ class TopicsController extends Controller
                 }
 
                 $AttachFile->delete();
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                    __('backend.deleteDone'))->with('activeTab', 'files');
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'doneMessage',
+                    __('backend.deleteDone')
+                )->with('activeTab', 'files');
             } else {
                 return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab', 'files');
             }
@@ -1888,12 +1957,13 @@ class TopicsController extends Controller
 
                         AttachFile::wherein('id', $request->ids)
                             ->delete();
-
                     }
                 }
             }
-            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                __('backend.saveDone'))->with('activeTab', 'files');
+            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                'doneMessage',
+                __('backend.saveDone')
+            )->with('activeTab', 'files');
         } else {
             return redirect()->route('NotFound');
         }
@@ -1939,8 +2009,10 @@ class TopicsController extends Controller
             if (!@Auth::user()->permissionsGroup->add_status) {
                 return Redirect::to(route('NoPermission'))->send();
             }
-            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab',
-                'related')->with('relatedST', 'create');
+            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                'activeTab',
+                'related'
+            )->with('relatedST', 'create');
         } else {
             return redirect()->route('NotFound');
         }
@@ -1967,8 +2039,10 @@ class TopicsController extends Controller
                 $RelatedTopic->save();
             }
             if (count($request->related_topics_id) > 0) {
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                    __('backend.saveDone'))->with('activeTab', 'related');
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'doneMessage',
+                    __('backend.saveDone')
+                )->with('activeTab', 'related');
             }
         } else {
             return redirect()->route('NotFound');
@@ -1987,8 +2061,10 @@ class TopicsController extends Controller
             $RelatedTopic = RelatedTopic::find($file_id);
             if (!empty($RelatedTopic)) {
                 $RelatedTopic->delete();
-                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                    __('backend.deleteDone'))->with('activeTab', 'related');
+                return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                    'doneMessage',
+                    __('backend.deleteDone')
+                )->with('activeTab', 'related');
             } else {
                 return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('activeTab', 'related');
             }
@@ -2021,12 +2097,13 @@ class TopicsController extends Controller
 
                         RelatedTopic::wherein('id', $request->ids)
                             ->delete();
-
                     }
                 }
             }
-            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with('doneMessage',
-                __('backend.saveDone'))->with('activeTab', 'related');
+            return redirect()->action('Dashboard\TopicsController@edit', [$webmasterId, $id])->with(
+                'doneMessage',
+                __('backend.saveDone')
+            )->with('activeTab', 'related');
         } else {
             return redirect()->route('NotFound');
         }
@@ -2044,10 +2121,14 @@ class TopicsController extends Controller
         $fileFinalName = "";
         $fileFinalTitle = ""; // Original file name without extension
         if ($request->$formFileName != "") {
-            $fileFinalTitle = basename($request->file($formFileName)->getClientOriginalName(),
-                '.' . $request->file($formFileName)->getClientOriginalExtension());
-            $fileFinalName = time() . rand(1111,
-                    9999) . '.' . $request->file($formFileName)->getClientOriginalExtension();
+            $fileFinalTitle = basename(
+                $request->file($formFileName)->getClientOriginalName(),
+                '.' . $request->file($formFileName)->getClientOriginalExtension()
+            );
+            $fileFinalName = time() . rand(
+                1111,
+                9999
+            ) . '.' . $request->file($formFileName)->getClientOriginalExtension();
             $path = $this->uploadPath;
             $request->file($formFileName)->move($path, $fileFinalName);
         }
@@ -2057,7 +2138,6 @@ class TopicsController extends Controller
         } else {
             return "Error";
         }
-
     }
 
     public function send_notification($WebmasterSection, $Topic, $Case = "")
@@ -2164,7 +2244,6 @@ class TopicsController extends Controller
                         }
                     }
                 } catch (\Exception $e) {
-
                 }
 
                 $message_details = "<h3>" . $tpc_title . "</h3>" . Auth::user()->name . $fields_details . "<hr><a href='" . route("topicsEdit", [@$WebmasterSection->id, @$Topic->id]) . "'>View All Details</a>";
@@ -2179,7 +2258,6 @@ class TopicsController extends Controller
                 ));
             }
         } catch (\Exception $e) {
-
         }
     }
 }

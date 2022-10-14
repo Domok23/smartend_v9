@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-
-use App\Http\Controllers\Controller;
-use App\Models\WebmasterSection;
-use Auth;
 use File;
 use Helper;
 use Illuminate\Http\Request;
+use App\Models\WebmasterSection;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+// Seharusnya
+// use Illuminate\Support\Facades\Auth;
 
 class FileManagerController extends Controller
 {
@@ -17,7 +19,7 @@ class FileManagerController extends Controller
         $this->middleware('auth');
 
         // Check Permissions
-        if(!@Auth::user()->permissionsGroup->settings_status){
+        if (!@Auth::user()->permissionsGroup->settings_status) {
             return Redirect::to(route('NoPermission'))->send();
         }
     }

@@ -1,21 +1,22 @@
 <?php
 
-use App\Http\Controllers\Dashboard\DashboardController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\Dashboard\MenusController;
 use App\Http\Controllers\Dashboard\UsersController;
-use App\Http\Controllers\Dashboard\WebmasterSettingsController;
+use App\Http\Controllers\Dashboard\EventsController;
+use App\Http\Controllers\Dashboard\TopicsController;
+use App\Http\Controllers\Dashboard\BannersController;
+use App\Http\Controllers\Dashboard\ContactsController;
+use App\Http\Controllers\Dashboard\SettingsController;
+use App\Http\Controllers\Dashboard\WebmailsController;
+use App\Http\Controllers\Dashboard\AnalyticsController;
+use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Dashboard\CategoriesController;
+use App\Http\Controllers\Dashboard\FileManagerController;
 use App\Http\Controllers\Dashboard\WebmasterBannersController;
 use App\Http\Controllers\Dashboard\WebmasterSectionsController;
-use App\Http\Controllers\Dashboard\SettingsController;
-use App\Http\Controllers\Dashboard\BannersController;
-use App\Http\Controllers\Dashboard\CategoriesController;
-use App\Http\Controllers\Dashboard\TopicsController;
-use App\Http\Controllers\Dashboard\ContactsController;
-use App\Http\Controllers\Dashboard\WebmailsController;
-use App\Http\Controllers\Dashboard\EventsController;
-use App\Http\Controllers\Dashboard\AnalyticsController;
-use App\Http\Controllers\Dashboard\MenusController;
-use App\Http\Controllers\Dashboard\FileManagerController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Dashboard\WebmasterSettingsController;
 
 // Admin Home
 Route::get('/', [DashboardController::class, 'index'])->name('adminHome');

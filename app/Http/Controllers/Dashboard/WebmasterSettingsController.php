@@ -2,33 +2,34 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
-use App\Models\AttachFile;
-use App\Models\Banner;
-use App\Models\ContactsGroup;
-use App\Models\Country;
-use App\Http\Requests;
+use App\Models\Map;
 use App\Models\Menu;
-use App\Models\Permissions;
+use App\Models\Topic;
+use App\Http\Requests;
+use App\Models\Banner;
+use App\Helpers\Helper;
+use App\Models\Country;
 use App\Models\Section;
 use App\Models\Setting;
-use App\Models\Topic;
-use App\Models\Map;
 use App\Models\Language;
+use App\Models\AttachFile;
+use App\Models\Permissions;
+use Illuminate\Http\Request;
+use App\Models\ContactsGroup;
 use App\Models\WebmasterBanner;
 use App\Models\WebmasterSection;
-use App\Models\WebmasterSectionField;
 use App\Models\WebmasterSetting;
-use Auth;
-use Illuminate\Http\Request;
-use Redirect;
-use File;
-use Helper;
-use Mail;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Mail;
+use App\Models\WebmasterSectionField;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Database\Schema\Blueprint;
 
 class WebmasterSettingsController extends Controller
 {
@@ -37,7 +38,7 @@ class WebmasterSettingsController extends Controller
         $this->middleware('auth');
 
         // Check Permissions
-        if(!@Auth::user()->permissionsGroup->webmaster_status){
+        if (!@Auth::user()->permissionsGroup->webmaster_status) {
             return Redirect::to(route('NoPermission'))->send();
         }
 
@@ -65,7 +66,6 @@ class WebmasterSettingsController extends Controller
         $WebmasterSetting = WebmasterSetting::find(1);
         if (!empty($WebmasterSetting)) {
             return view("dashboard.webmaster.settings.home", compact("WebmasterSetting", "GeneralWebmasterSections", "ParentMenus", "WebmasterBanners", "ContactsGroups", "SitePages", "PermissionsGroups", "Countries", "Languages"));
-
         } else {
             return redirect()->route('adminHome');
         }
@@ -121,27 +121,27 @@ class WebmasterSettingsController extends Controller
             $WebmasterSetting->nocaptcha_secret = ($request->nocaptcha_secret != "") ? $request->nocaptcha_secret : "";
             $WebmasterSetting->nocaptcha_sitekey = ($request->nocaptcha_sitekey != "") ? $request->nocaptcha_sitekey : "";
             $WebmasterSetting->google_tags_status = $request->google_tags_status;
-            $WebmasterSetting->google_tags_id = ($request->google_tags_id!="")?$request->google_tags_id:"";
-            $WebmasterSetting->google_analytics_code = ($request->google_analytics_code!="")?$request->google_analytics_code:"";
+            $WebmasterSetting->google_tags_id = ($request->google_tags_id != "") ? $request->google_tags_id : "";
+            $WebmasterSetting->google_analytics_code = ($request->google_analytics_code != "") ? $request->google_analytics_code : "";
 
             $WebmasterSetting->login_facebook_status = $request->login_facebook_status;
-            $WebmasterSetting->login_facebook_client_id = ($request->login_facebook_client_id!="")?$request->login_facebook_client_id:"";
-            $WebmasterSetting->login_facebook_client_secret = ($request->login_facebook_client_secret!="")?$request->login_facebook_client_secret:"";
+            $WebmasterSetting->login_facebook_client_id = ($request->login_facebook_client_id != "") ? $request->login_facebook_client_id : "";
+            $WebmasterSetting->login_facebook_client_secret = ($request->login_facebook_client_secret != "") ? $request->login_facebook_client_secret : "";
             $WebmasterSetting->login_twitter_status = $request->login_twitter_status;
-            $WebmasterSetting->login_twitter_client_id = ($request->login_twitter_client_id!="")?$request->login_twitter_client_id:"";
-            $WebmasterSetting->login_twitter_client_secret = ($request->login_twitter_client_secret!="")?$request->login_twitter_client_secret:"";
+            $WebmasterSetting->login_twitter_client_id = ($request->login_twitter_client_id != "") ? $request->login_twitter_client_id : "";
+            $WebmasterSetting->login_twitter_client_secret = ($request->login_twitter_client_secret != "") ? $request->login_twitter_client_secret : "";
             $WebmasterSetting->login_google_status = $request->login_google_status;
-            $WebmasterSetting->login_google_client_id = ($request->login_google_client_id!="")?$request->login_google_client_id:"";
-            $WebmasterSetting->login_google_client_secret = ($request->login_google_client_secret!="")?$request->login_google_client_secret:"";
+            $WebmasterSetting->login_google_client_id = ($request->login_google_client_id != "") ? $request->login_google_client_id : "";
+            $WebmasterSetting->login_google_client_secret = ($request->login_google_client_secret != "") ? $request->login_google_client_secret : "";
             $WebmasterSetting->login_linkedin_status = $request->login_linkedin_status;
-            $WebmasterSetting->login_linkedin_client_id = ($request->login_linkedin_client_id!="")?$request->login_linkedin_client_id:"";
-            $WebmasterSetting->login_linkedin_client_secret = ($request->login_linkedin_client_secret!="")?$request->login_linkedin_client_secret:"";
+            $WebmasterSetting->login_linkedin_client_id = ($request->login_linkedin_client_id != "") ? $request->login_linkedin_client_id : "";
+            $WebmasterSetting->login_linkedin_client_secret = ($request->login_linkedin_client_secret != "") ? $request->login_linkedin_client_secret : "";
             $WebmasterSetting->login_github_status = $request->login_github_status;
-            $WebmasterSetting->login_github_client_id = ($request->login_github_client_id!="")?$request->login_github_client_id:"";
-            $WebmasterSetting->login_github_client_secret = ($request->login_github_client_secret!="")?$request->login_github_client_secret:"";
+            $WebmasterSetting->login_github_client_id = ($request->login_github_client_id != "") ? $request->login_github_client_id : "";
+            $WebmasterSetting->login_github_client_secret = ($request->login_github_client_secret != "") ? $request->login_github_client_secret : "";
             $WebmasterSetting->login_bitbucket_status = $request->login_bitbucket_status;
-            $WebmasterSetting->login_bitbucket_client_id = ($request->login_bitbucket_client_id!="")?$request->login_bitbucket_client_id:"";
-            $WebmasterSetting->login_bitbucket_client_secret = ($request->login_bitbucket_client_secret!="")?$request->login_bitbucket_client_secret:"";
+            $WebmasterSetting->login_bitbucket_client_id = ($request->login_bitbucket_client_id != "") ? $request->login_bitbucket_client_id : "";
+            $WebmasterSetting->login_bitbucket_client_secret = ($request->login_bitbucket_client_secret != "") ? $request->login_bitbucket_client_secret : "";
 
             $WebmasterSetting->dashboard_link_status = $request->dashboard_link_status;
             $WebmasterSetting->text_editor = $request->text_editor;
@@ -152,7 +152,7 @@ class WebmasterSettingsController extends Controller
             $WebmasterSetting->save();
 
             $OLD_BACKEND_PATH = env("BACKEND_PATH");
-            if($request->backend_path ==""){
+            if ($request->backend_path == "") {
                 $request->backend_path = "admin";
             }
             // Update .env file
@@ -237,7 +237,7 @@ class WebmasterSettingsController extends Controller
             if ($code == "en") {
                 $success = true;
             } else {
-                $success = \File::copyDirectory(base_path("lang/en"), base_path("lang/$code"));
+                $success = File::copyDirectory(base_path("lang/en"), base_path("lang/$code"));
             }
             if ($success) {
                 $Language = new Language;
@@ -318,7 +318,7 @@ class WebmasterSettingsController extends Controller
                     if ($Language->code == "en") {
                         $success = true;
                     } else {
-                        $success = \File::deleteDirectory(base_path("lang/" . $Language->code));
+                        $success = File::deleteDirectory(base_path("lang/" . $Language->code));
                     }
                     if ($success) {
                         $Language->delete();
@@ -581,7 +581,6 @@ class WebmasterSettingsController extends Controller
         try {
             // empty old translation table
             DB::table('ltm_translations')->truncate();
-
         } catch (\Exception $e) {
         }
         return true;
@@ -594,7 +593,7 @@ class WebmasterSettingsController extends Controller
             if ($current_lang_code == $code) {
                 $df_language = Language::first();
                 if (!empty($df_language)) {
-                    \Session::put('lang', $df_language->code);
+                    Session::put('lang', $df_language->code);
                 }
             }
         } catch (\Exception $e) {
@@ -620,7 +619,6 @@ class WebmasterSettingsController extends Controller
                 $table->dropColumn('seo_keywords_' . $code);
                 $table->dropColumn('seo_url_slug_' . $code);
             });
-
         } catch (\Exception $e) {
         }
         try {
@@ -628,7 +626,6 @@ class WebmasterSettingsController extends Controller
             Schema::table('menus', function (Blueprint $table) use ($code) {
                 $table->dropColumn('title_' . $code);
             });
-
         } catch (\Exception $e) {
         }
         try {
@@ -637,7 +634,6 @@ class WebmasterSettingsController extends Controller
                 $table->dropColumn('title_' . $code);
                 $table->dropColumn('details_' . $code);
             });
-
         } catch (\Exception $e) {
         }
         try {
@@ -647,7 +643,6 @@ class WebmasterSettingsController extends Controller
                     $table->dropColumn('title_' . $code);
                 });
             }
-
         } catch (\Exception $e) {
         }
         try {
@@ -657,7 +652,6 @@ class WebmasterSettingsController extends Controller
                 $table->dropColumn('details_' . $code);
                 $table->dropColumn('file_' . $code);
             });
-
         } catch (\Exception $e) {
         }
         try {
@@ -665,7 +659,6 @@ class WebmasterSettingsController extends Controller
             Schema::table('attach_files', function (Blueprint $table) use ($code) {
                 $table->dropColumn('title_' . $code);
             });
-
         } catch (\Exception $e) {
         }
         try {
@@ -674,7 +667,6 @@ class WebmasterSettingsController extends Controller
                 $table->dropColumn('title_' . $code);
                 $table->dropColumn('details_' . $code);
             });
-
         } catch (\Exception $e) {
         }
         try {
@@ -686,7 +678,6 @@ class WebmasterSettingsController extends Controller
                 $table->dropColumn('seo_keywords_' . $code);
                 $table->dropColumn('seo_url_slug_' . $code);
             });
-
         } catch (\Exception $e) {
         }
         try {
@@ -694,7 +685,6 @@ class WebmasterSettingsController extends Controller
             Schema::table('webmaster_banners', function (Blueprint $table) use ($code) {
                 $table->dropColumn('title_' . $code);
             });
-
         } catch (\Exception $e) {
         }
         try {
@@ -707,7 +697,6 @@ class WebmasterSettingsController extends Controller
                 $table->dropColumn('contact_t7_' . $code);
                 $table->dropColumn('style_logo_' . $code);
             });
-
         } catch (\Exception $e) {
         }
 
@@ -790,7 +779,6 @@ class WebmasterSettingsController extends Controller
                 }
             }
         } catch (\Exception $e) {
-
         }
 
         return redirect()->action('Dashboard\WebmasterSettingsController@edit')

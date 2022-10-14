@@ -1,7 +1,7 @@
-
-<div class="tab-pane {{  ( Session::get('active_tab') == 'languageSettingsTab') ? 'active' : '' }}"
-     id="tab-2">
-    <div class="p-a-md"><h5>{!!  __('backend.languageSettings') !!}</h5></div>
+<div class="tab-pane {{ Session::get('active_tab') == 'languageSettingsTab' ? 'active' : '' }}" id="tab-2">
+    <div class="p-a-md">
+        <h5>{!! __('backend.languageSettings') !!}</h5>
+    </div>
 
     <div class="p-a-md col-md-12">
         <div class="row">
@@ -10,10 +10,11 @@
                     <label>{{ __('backend.defaultLanguage') }} : </label>
                     <div>
                         <select name="languages_by_default" class="form-control c-select">
-                            @foreach(Helper::languagesList() as $ActiveLanguage)
-                                @if($ActiveLanguage->box_status)
-                                    <option
-                                        value="{{ $ActiveLanguage->code }}" {{ ($WebmasterSetting->languages_by_default==$ActiveLanguage->code)?"selected='selected'":"" }}>{{ $ActiveLanguage->title }}</option>
+                            @foreach (Helper::languagesList() as $ActiveLanguage)
+                                @if ($ActiveLanguage->box_status)
+                                    <option value="{{ $ActiveLanguage->code }}"
+                                        {{ $WebmasterSetting->languages_by_default == $ActiveLanguage->code ? "selected='selected'" : '' }}>
+                                        {{ $ActiveLanguage->title }}</option>
                                 @endif
                             @endforeach
                         </select>
@@ -24,9 +25,8 @@
                 <div class="form-group">
                     <label>{{ __('backend.timezone') }} : </label>
 
-                    <select name="timezone" id="timezone"
-                            class="form-control select2 select2-hidden-accessible" ui-jp="select2"
-                            ui-options="{theme: 'bootstrap'}">
+                    <select name="timezone" id="timezone" class="form-control select2 select2-hidden-accessible"
+                        ui-jp="select2" ui-options="{theme: 'bootstrap'}">
                         <option value="America/New_York">America, Eastern</option>
                         <option value="America/Chicago">America, Central</option>
                         <option value="America/Denver">America, Mountain</option>
@@ -557,23 +557,24 @@
             <div class="col-sm-6">
                 <label>{{ __('backend.dateFormat') }} : </label>
                 <select name="date_format" class="form-control select2 select2-hidden-accessible" ui-jp="select2"
-                        ui-options="{theme: 'bootstrap'}">
-                    <option value="Y-m-d" {{ (env("DATE_FORMAT","Y-m-d")=="Y-m-d")?"selected":"" }}>Y-m-d</option>
-                    <option value="d-m-Y" {{ (env("DATE_FORMAT","Y-m-d")=="d-m-Y")?"selected":"" }}>d-m-Y</option>
-                    <option value="m-d-Y" {{ (env("DATE_FORMAT","Y-m-d")=="m-d-Y")?"selected":"" }}>m-d-Y</option>
-                    <option value="d/m/Y" {{ (env("DATE_FORMAT","Y-m-d")=="d/m/Y")?"selected":"" }}>d/m/Y</option>
-                    <option value="m/d/Y" {{ (env("DATE_FORMAT","Y-m-d")=="m/d/Y")?"selected":"" }}>m/d/Y</option>
-                    <option value="d.m.Y" {{ (env("DATE_FORMAT","Y-m-d")=="d.m.Y")?"selected":"" }}>d.m.Y</option>
-                    <option value="m.d.Y" {{ (env("DATE_FORMAT","Y-m-d")=="m.d.Y")?"selected":"" }}>m.d.Y</option>
+                    ui-options="{theme: 'bootstrap'}">
+                    <option value="Y-m-d" {{ env('DATE_FORMAT', 'Y-m-d') == 'Y-m-d' ? 'selected' : '' }}>Y-m-d</option>
+                    <option value="d-m-Y" {{ env('DATE_FORMAT', 'Y-m-d') == 'd-m-Y' ? 'selected' : '' }}>d-m-Y</option>
+                    <option value="m-d-Y" {{ env('DATE_FORMAT', 'Y-m-d') == 'm-d-Y' ? 'selected' : '' }}>m-d-Y</option>
+                    <option value="d/m/Y" {{ env('DATE_FORMAT', 'Y-m-d') == 'd/m/Y' ? 'selected' : '' }}>d/m/Y</option>
+                    <option value="m/d/Y" {{ env('DATE_FORMAT', 'Y-m-d') == 'm/d/Y' ? 'selected' : '' }}>m/d/Y</option>
+                    <option value="d.m.Y" {{ env('DATE_FORMAT', 'Y-m-d') == 'd.m.Y' ? 'selected' : '' }}>d.m.Y</option>
+                    <option value="m.d.Y" {{ env('DATE_FORMAT', 'Y-m-d') == 'm.d.Y' ? 'selected' : '' }}>m.d.Y</option>
 
                 </select>
             </div>
             <div class="col-sm-6">
                 <label>{{ __('backend.calendarFirstDay') }} : </label>
-                <select name="first_day_of_week" class="form-control select2 select2-hidden-accessible" ui-jp="select2"
-                        ui-options="{theme: 'bootstrap'}">
-                    @foreach( __('backend.daysName') as $key=>$dayName)
-                    <option value="{{ $key }}" {{ (env("FIRST_DAY_OF_WEEK",0)==$key)?"selected":"" }}>{{ $dayName }}</option>
+                <select name="first_day_of_week" class="form-control select2 select2-hidden-accessible"
+                    ui-jp="select2" ui-options="{theme: 'bootstrap'}">
+                    @foreach (__('backend.daysName') as $key => $dayName)
+                        <option value="{{ $key }}" {{ env('FIRST_DAY_OF_WEEK', 0) == $key ? 'selected' : '' }}>
+                            {{ $dayName }}</option>
                     @endforeach
 
                 </select>
@@ -582,69 +583,65 @@
 
         <div class="m-t-2">
             <button type="button" class="btn btn-sm accent pull-right" data-toggle="modal"
-                    data-target="#add_language">
+                data-target="#add_language">
                 <i class="material-icons">&#xe145;</i> {{ __('backend.addNewLanguage') }}
             </button>
             <h5 class="m-b m-t-3">{{ __('backend.languages') }}</h5>
             <div class="box">
                 <table class="table table-striped b-t">
                     <thead class="dker">
-                    <tr>
-                        <th width="20%">{{ __('backend.languageTitle') }}</th>
-                        <th class="text-center">{{ __('backend.languageCode') }}</th>
-                        <th class="text-center">{{ __('backend.languageDirection') }}</th>
-                        <th class="text-center">{{ __('backend.status') }}</th>
-                        <th class="text-center" width="40%">{{ __('backend.options') }}</th>
-                    </tr>
+                        <tr>
+                            <th width="20%">{{ __('backend.languageTitle') }}</th>
+                            <th class="text-center">{{ __('backend.languageCode') }}</th>
+                            <th class="text-center">{{ __('backend.languageDirection') }}</th>
+                            <th class="text-center">{{ __('backend.status') }}</th>
+                            <th class="text-center" width="40%">{{ __('backend.options') }}</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    @foreach($Languages as $Language)
-                        <tr>
-                            <td>
-                            <h6>
-                                @if($Language->icon !="")
-                                    <img
-                                        src="{{ asset('assets/dashboard/images/flags/'.$Language->icon.".svg") }}"
-                                        alt="" class="w-20">
-                                @endif
-                                &nbsp; {{ $Language->title }}
-                            </h6>
-                            </td>
-                            <td class="text-center">{{ $Language->code }}</td>
-                            <td class="text-center">{{ $Language->direction }}</td>
-                            <td class="text-center"><i
-                                    class="fa {{ ($Language->status==1) ? "fa-check text-success":"fa-times text-danger" }} inline"></i>
-                            </td>
-                            <td class="text-center">
-                                @if(@Auth::user()->permissionsGroup->edit_status)
-                                    <button type="button" class="btn btn-sm success"
-                                            data-toggle="modal"
+                        @foreach ($Languages as $Language)
+                            <tr>
+                                <td>
+                                    <h6>
+                                        @if ($Language->icon != '')
+                                            <img src="{{ asset('assets/dashboard/images/flags/' . $Language->icon . '.svg') }}"
+                                                alt="" class="w-20">
+                                        @endif
+                                        &nbsp; {{ $Language->title }}
+                                    </h6>
+                                </td>
+                                <td class="text-center">{{ $Language->code }}</td>
+                                <td class="text-center">{{ $Language->direction }}</td>
+                                <td class="text-center"><i
+                                        class="fa {{ $Language->status == 1 ? 'fa-check text-success' : 'fa-times text-danger' }} inline"></i>
+                                </td>
+                                <td class="text-center">
+                                    @if (@Auth::user()->permissionsGroup->edit_status)
+                                        <button type="button" class="btn btn-sm success" data-toggle="modal"
                                             data-target="#edit_language_{{ $Language->id }}">
-                                        <small><i
-                                                class="material-icons">&#xe3c9;</i> {{ __('backend.edit') }}
-                                        </small>
-                                    </button>
-                                    <a class="btn btn-sm info " target="_blank"
-                                       href="{{ url(env('BACKEND_PATH').'/webmaster/translations/'.$Language->code.'/translations') }}">
-                                        <i class="material-icons">&#xe8e2;</i> {{ __('backend.updateTranslation') }}
-                                    </a>
-                                @endif
-                                @if(count($Languages) >1)
-                                    @if(@Auth::user()->permissionsGroup->delete_status)
-                                        <button type="button" class="btn btn-sm warning"
-                                                data-toggle="modal"
-                                                data-target="#delete_language_{{ $Language->id }}"
-                                                ui-toggle-class="bounce"
-                                                ui-target="#animate">
-                                            <small><i
-                                                    class="material-icons">&#xe872;</i> {{ __('backend.delete') }}
+                                            <small><i class="material-icons">&#xe3c9;</i> {{ __('backend.edit') }}
                                             </small>
                                         </button>
+                                        <a class="btn btn-sm info " target="_blank"
+                                            href="{{ url(env('BACKEND_PATH') . '/webmaster/translations/' . $Language->code . '/translations') }}">
+                                            <i class="material-icons">&#xe8e2;</i>
+                                            {{ __('backend.updateTranslation') }}
+                                        </a>
                                     @endif
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
+                                    @if (count($Languages) > 1)
+                                        @if (@Auth::user()->permissionsGroup->delete_status)
+                                            <button type="button" class="btn btn-sm warning" data-toggle="modal"
+                                                data-target="#delete_language_{{ $Language->id }}"
+                                                ui-toggle-class="bounce" ui-target="#animate">
+                                                <small><i class="material-icons">&#xe872;</i>
+                                                    {{ __('backend.delete') }}
+                                                </small>
+                                            </button>
+                                        @endif
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>

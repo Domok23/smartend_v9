@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Helpers\Helper;
 use App\Models\Setting;
 use App\Models\Webmail;
 use App\Models\WebmailsFile;
+use Illuminate\Http\Request;
 use App\Models\WebmailsGroup;
 use App\Models\WebmasterSection;
-use Auth;
-use File;
-use Helper;
-use Illuminate\Http\Request;
-use Mail;
-use Redirect;
-use Validator;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 
 
 class WebmailsController extends Controller
@@ -46,7 +47,7 @@ class WebmailsController extends Controller
         if (@Auth::user()->permissionsGroup->view_status) {
             $WebmailsGroups = WebmailsGroup::where('created_by', '=', Auth::user()->id)->orderby('id', 'asc')->get();
 
-            if ( is_numeric($group_id) && $group_id > 0) {
+            if (is_numeric($group_id) && $group_id > 0) {
                 //List of group Webmails
                 $Webmails = Webmail::where('created_by', '=', Auth::user()->id)->where('group_id', '=', $group_id)
                     ->where('cat_id', '=', 0)
@@ -57,7 +58,6 @@ class WebmailsController extends Controller
                 if ($wid > 0) {
                     $WebmailToreply = Webmail::where('created_by', '=', Auth::user()->id)->find($wid);
                 }
-
             } elseif ($group_id == "sent") {
                 //List of Sent
                 $Webmails = Webmail::where('created_by', '=', Auth::user()->id)->where('cat_id', '=', 1)
@@ -85,7 +85,7 @@ class WebmailsController extends Controller
         } else {
             $WebmailsGroups = WebmailsGroup::orderby('id', 'asc')->get();
 
-            if ( is_numeric($group_id) && $group_id > 0) {
+            if (is_numeric($group_id) && $group_id > 0) {
                 //List of group Webmails
                 $Webmails = Webmail::where('group_id', '=', (int)$group_id)
                     ->where('cat_id', '=', 0)
@@ -103,8 +103,6 @@ class WebmailsController extends Controller
                 } else {
                     $WebmailToreply = "";
                 }
-
-
             } elseif ($group_id == "sent") {
 
                 //List of Sent
@@ -135,12 +133,18 @@ class WebmailsController extends Controller
 
         if (@Auth::user()->permissionsGroup->view_status) {
             //Count of unread
-            $WaitWebmailsCount = Webmail::where('created_by', '=', Auth::user()->id)->where('status', '=',
-                '0')->count();
+            $WaitWebmailsCount = Webmail::where('created_by', '=', Auth::user()->id)->where(
+                'status',
+                '=',
+                '0'
+            )->count();
 
             //Count of draft
-            $DraftWebmailsCount = Webmail::where('created_by', '=', Auth::user()->id)->where('cat_id', '=',
-                '2')->count();
+            $DraftWebmailsCount = Webmail::where('created_by', '=', Auth::user()->id)->where(
+                'cat_id',
+                '=',
+                '2'
+            )->count();
 
             //Count of All Webmails
             $AllWebmailsCount = Webmail::where('created_by', '=', Auth::user()->id)->count();
@@ -160,10 +164,23 @@ class WebmailsController extends Controller
 
         $search_word = "";
 
-        return view("dashboard.inbox.list",
-            compact("Webmails", "GeneralWebmasterSections", "WebmailsGroups", "WaitWebmailsCount", "DraftWebmailsCount",
-                "AllWebmailsCount", "group_id", "WebmailToreply", "stat", "search_word", "SiteSetting",
-                "contact_email"));
+        return view(
+            "dashboard.inbox.list",
+            compact(
+                "Webmails",
+                "GeneralWebmasterSections",
+                "WebmailsGroups",
+                "WaitWebmailsCount",
+                "DraftWebmailsCount",
+                "AllWebmailsCount",
+                "group_id",
+                "WebmailToreply",
+                "stat",
+                "search_word",
+                "SiteSetting",
+                "contact_email"
+            )
+        );
     }
 
     public function search(Request $request)
@@ -179,8 +196,11 @@ class WebmailsController extends Controller
 
             if ($request->q != "") {
                 //find Webmails
-                $Webmails = Webmail::where('created_by', '=', Auth::user()->id)->where('title', 'like',
-                    '%' . $request->q . '%')
+                $Webmails = Webmail::where('created_by', '=', Auth::user()->id)->where(
+                    'title',
+                    'like',
+                    '%' . $request->q . '%'
+                )
                     ->orwhere('details', 'like', '%' . $request->q . '%')
                     ->orwhere('from_name', 'like', '%' . $request->q . '%')
                     ->orwhere('from_email', 'like', '%' . $request->q . '%')
@@ -192,12 +212,18 @@ class WebmailsController extends Controller
                 return redirect()->action('Dashboard\WebmailsController@index');
             }
             //Count of unread
-            $WaitWebmailsCount = Webmail::where('created_by', '=', Auth::user()->id)->where('status', '=',
-                '0')->count();
+            $WaitWebmailsCount = Webmail::where('created_by', '=', Auth::user()->id)->where(
+                'status',
+                '=',
+                '0'
+            )->count();
 
             //Count of draft
-            $DraftWebmailsCount = Webmail::where('created_by', '=', Auth::user()->id)->where('status', '=',
-                '2')->count();
+            $DraftWebmailsCount = Webmail::where('created_by', '=', Auth::user()->id)->where(
+                'status',
+                '=',
+                '2'
+            )->count();
 
             //Count of All Webmails
             $AllWebmailsCount = Webmail::where('created_by', '=', Auth::user()->id)->count();
@@ -229,9 +255,19 @@ class WebmailsController extends Controller
         $group_id = "";
         $search_word = $request->q;
 
-        return view("dashboard.inbox.list",
-            compact("Webmails", "GeneralWebmasterSections", "WebmailsGroups", "WaitWebmailsCount", "DraftWebmailsCount",
-                "AllWebmailsCount", "group_id", "search_word"));
+        return view(
+            "dashboard.inbox.list",
+            compact(
+                "Webmails",
+                "GeneralWebmasterSections",
+                "WebmailsGroups",
+                "WaitWebmailsCount",
+                "DraftWebmailsCount",
+                "AllWebmailsCount",
+                "group_id",
+                "search_word"
+            )
+        );
     }
 
     public function storeGroup(Request $request)
@@ -270,8 +306,10 @@ class WebmailsController extends Controller
         $WebmailsGroup->created_by = Auth::user()->id;
         $WebmailsGroup->save();
 
-        return redirect()->action('Dashboard\WebmailsController@index')->with('doneMessage',
-            __('backend.saveDone'));
+        return redirect()->action('Dashboard\WebmailsController@index')->with(
+            'doneMessage',
+            __('backend.saveDone')
+        );
     }
 
     public function store(Request $request)
@@ -331,7 +369,6 @@ class WebmailsController extends Controller
                     }
                 }
             }
-
         }
 
         if ($request->btn_clicked != "draft") {
@@ -360,7 +397,6 @@ class WebmailsController extends Controller
                             $message->attach($uploadFile);
                         }
                     }
-
                 });
             }
 
@@ -387,8 +423,10 @@ class WebmailsController extends Controller
         if (!empty($WebmailToEdit)) {
             $WebmailToEdit->status = 1;
             $WebmailToEdit->save();
-            return redirect()->action('Dashboard\WebmailsController@index', $WebmailToEdit->group_id)->with('WebmailToEdit',
-                $WebmailToEdit);
+            return redirect()->action('Dashboard\WebmailsController@index', $WebmailToEdit->group_id)->with(
+                'WebmailToEdit',
+                $WebmailToEdit
+            );
         } else {
             return redirect()->action('Dashboard\WebmailsController@index');
         }
@@ -494,7 +532,6 @@ class WebmailsController extends Controller
                                 $message->attach($uploadFile);
                             }
                         }
-
                     });
                 }
                 return redirect()->action('Dashboard\WebmailsController@index')->with('doneMessage', __('backend.messageSentSuccessfully'));
@@ -515,8 +552,10 @@ class WebmailsController extends Controller
             $WebmailsGroup->updated_by = Auth::user()->id;
             $WebmailsGroup->save();
         }
-        return redirect()->action('Dashboard\WebmailsController@index')->with('doneMessage',
-            __('backend.saveDone'));
+        return redirect()->action('Dashboard\WebmailsController@index')->with(
+            'doneMessage',
+            __('backend.saveDone')
+        );
     }
 
     public function destroy($id)
@@ -535,9 +574,10 @@ class WebmailsController extends Controller
 
             $Webmail->delete();
         }
-        return redirect()->action('Dashboard\WebmailsController@index')->with('doneMessage',
-            __('backend.deleteDone'));
-
+        return redirect()->action('Dashboard\WebmailsController@index')->with(
+            'doneMessage',
+            __('backend.deleteDone')
+        );
     }
 
     public function destroyGroup($id)
@@ -554,8 +594,10 @@ class WebmailsController extends Controller
         }
         if (!empty($WebmailsGroup)) {
             $WebmailsGroup->delete();
-            return redirect()->action('Dashboard\WebmailsController@index')->with('doneMessage',
-                __('backend.deleteDone'));
+            return redirect()->action('Dashboard\WebmailsController@index')->with(
+                'doneMessage',
+                __('backend.deleteDone')
+            );
         } else {
             return redirect()->action('Dashboard\WebmailsController@index');
         }
@@ -568,11 +610,9 @@ class WebmailsController extends Controller
             if ($request->action == "read") {
                 Webmail::wherein('id', $request->ids)
                     ->update(['status' => 1]);
-
             } elseif ($request->action == "unread") {
                 Webmail::wherein('id', $request->ids)
                     ->update(['status' => 0]);
-
             } elseif ($request->action == "delete") {
                 // Check Permissions
                 if (!@Auth::user()->permissionsGroup->delete_status) {
@@ -591,16 +631,12 @@ class WebmailsController extends Controller
 
                 Webmail::wherein('id', $request->ids)
                     ->delete();
-
             } elseif ($request->action == "move") {
 
                 Webmail::wherein('id', $request->ids)
                     ->update(['group_id' => $request->group]);
-
             }
         }
         return redirect()->action('Dashboard\WebmailsController@index')->with('doneMessage2', __('backend.saveDone'));
     }
-
-
 }

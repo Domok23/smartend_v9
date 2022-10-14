@@ -4,7 +4,12 @@
 
 namespace App\Helpers;
 
-use App;
+use Illuminate\Support\Facades\App;
+use Exception;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Setting;
+use App\Models\WebmasterSetting;
+use Illuminate\Support\Facades\Session;
 use App\Models\AnalyticsPage;
 use App\Models\AnalyticsVisitor;
 use App\Models\Banner;
@@ -12,15 +17,12 @@ use App\Models\Country;
 use App\Models\Event;
 use App\Models\Menu;
 use App\Models\Section;
-use App\Models\Setting;
 use App\Models\Topic;
 use App\Models\Webmail;
 use App\Models\Language;
 use App\Models\WebmasterSection;
-use App\Models\WebmasterSetting;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use Auth;
 use GeoIP;
 
 class Helper
@@ -28,7 +30,7 @@ class Helper
 
     static function GeneralWebmasterSettings($var)
     {
-        $_Loader_WebmasterSettings = \Session::get('_Loader_WebmasterSettings');
+        $_Loader_WebmasterSettings = Session::get('_Loader_WebmasterSettings');
         if (empty($_Loader_WebmasterSettings)) {
             $_Loader_WebmasterSettings = WebmasterSetting::find(1);
             \Session()->put('_Loader_WebmasterSettings', $_Loader_WebmasterSettings);
@@ -38,7 +40,7 @@ class Helper
 
     static function GeneralSiteSettings($var)
     {
-        $_Loader_Web_Settings = \Session::get('_Loader_Web_Settings');
+        $_Loader_Web_Settings = Session::get('_Loader_Web_Settings');
         if (empty($_Loader_Web_Settings)) {
             $_Loader_Web_Settings = Setting::find(1);
             \Session()->put('_Loader_Web_Settings', $_Loader_Web_Settings);
@@ -49,7 +51,7 @@ class Helper
     // Get Events Alerts
     static function eventsAlerts()
     {
-        $_Loader_Events = \Session::get('_Loader_Events');
+        $_Loader_Events = Session::get('_Loader_Events');
         if (empty($_Loader_Events)) {
             if (@Auth::user()->permissionsGroup->view_status) {
                 $_Loader_Events = Event::where('created_by', '=', Auth::user()->id)->where('start_date', '>=', date('Y-m-d H:i:s'))->orderby('start_date', 'asc')->limit(10)->get();
@@ -554,10 +556,10 @@ class Helper
     static function currentLanguage()
     {
         $locale = App::getLocale();
-        if (\Session::has('lang')) {
-            $locale = \Session::get('lang');
+        if (Session::has('lang')) {
+            $locale = Session::get('lang');
         }
-        $_Loader_Languages = \Session::get('_Loader_Languages');
+        $_Loader_Languages = Session::get('_Loader_Languages');
         if (empty($_Loader_Languages)) {
             $_Loader_Languages = Language::all();
             \Session()->put('_Loader_Languages', $_Loader_Languages);
@@ -578,7 +580,7 @@ class Helper
 
     static function languagesList()
     {
-        $_Loader_Languages = \Session::get('_Loader_Languages');
+        $_Loader_Languages = Session::get('_Loader_Languages');
         if (empty($_Loader_Languages)) {
             $_Loader_Languages = Language::all();
             \Session()->put('_Loader_Languages', $_Loader_Languages);
@@ -607,7 +609,7 @@ class Helper
             if ($lang == "") {
                 $lang = @Helper::currentLanguage()->code;
             }
-            $_Loader_WebmasterSections = \Session::get('_Loader_WebmasterSections');
+            $_Loader_WebmasterSections = Session::get('_Loader_WebmasterSections');
             if (empty($_Loader_WebmasterSections)) {
                 $_Loader_WebmasterSections = WebmasterSection::all();
                 \Session()->put('_Loader_WebmasterSections', $_Loader_WebmasterSections);
@@ -822,5 +824,3 @@ class Helper
             '0')->orderby('row_no', 'asc')->get();
     }
 }
-
-?>

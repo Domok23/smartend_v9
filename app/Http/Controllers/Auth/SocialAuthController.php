@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Models\User;
-use Exception;
-use File;
-use Helper;
-use Illuminate\Support\Facades\Auth;
 use Image;
+use Exception;
+use App\Models\User;
+use App\Helpers\Helper;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Redirect;
 use Laravel\Socialite\Facades\Socialite;
-use Redirect;
 
 class SocialAuthController extends Controller
 {

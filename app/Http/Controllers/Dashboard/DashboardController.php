@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
+use App\Models\Event;
+use App\Models\Topic;
+use App\Http\Requests;
+use App\Helpers\Helper;
+use App\Models\Contact;
+use App\Models\Section;
+use App\Models\Webmail;
+use Illuminate\Http\Request;
 use App\Models\AnalyticsPage;
 use App\Models\AnalyticsVisitor;
-use App\Models\Contact;
-use App\Models\Event;
-use App\Http\Requests;
-use App\Models\Section;
-use App\Models\Topic;
-use App\Models\Webmail;
 use App\Models\WebmasterSection;
-use Auth;
-use Helper;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -45,8 +45,11 @@ class DashboardController extends Controller
                 ->where('cat_id', '=', 0)->limit(4)->get();
 
             //List of Events
-            $Events = Event::where('created_by', '=', Auth::user()->id)->where('start_date', '>=',
-                date('Y-m-d 00:00:00'))->orderby('start_date', 'asc')->limit(5)->get();
+            $Events = Event::where('created_by', '=', Auth::user()->id)->where(
+                'start_date',
+                '>=',
+                date('Y-m-d 00:00:00')
+            )->orderby('start_date', 'asc')->limit(5)->get();
 
 
             //List of all contacts
@@ -57,8 +60,11 @@ class DashboardController extends Controller
                 ->where('cat_id', '=', 0)->limit(4)->get();
 
             //List of Events
-            $Events = Event::where('start_date', '>=',
-                date('Y-m-d 00:00:00'))->orderby('start_date', 'asc')->limit(5)->get();
+            $Events = Event::where(
+                'start_date',
+                '>=',
+                date('Y-m-d 00:00:00')
+            )->orderby('start_date', 'asc')->limit(5)->get();
 
 
             //List of all contacts
@@ -119,7 +125,7 @@ class DashboardController extends Controller
         foreach ($AnalyticsVisitors as $AnalyticsV) {
 
             $FST = AnalyticsVisitor::where("$stat", $AnalyticsV->$stat)
-                ->where('date', $date_today)->orderby("id","desc")->first();
+                ->where('date', $date_today)->orderby("id", "desc")->first();
 
             $TotalV = AnalyticsVisitor::where("$stat", $AnalyticsV->$stat)
                 ->where('date', $date_today)->count();
@@ -219,8 +225,8 @@ class DashboardController extends Controller
                 $fsla = ", ";
             }
             $stepis = $ii + 2;
-            $timeis1 = sprintf("%02d", $ii).":00:00";
-            $timeis2 = sprintf("%02d", $stepis).":00:00";
+            $timeis1 = sprintf("%02d", $ii) . ":00:00";
+            $timeis2 = sprintf("%02d", $stepis) . ":00:00";
             $TotalV = AnalyticsVisitor::where('date', $day_date)
                 ->where('time', '>=', $timeis1)
                 ->where('time', '<', $timeis2)
@@ -231,10 +237,24 @@ class DashboardController extends Controller
             $TodayVisitorsRate = $TodayVisitorsRate . $fsla . "[$ii,$TotalV]";
         }
 
-        return view('dashboard.home',
-            compact("GeneralWebmasterSections", "Webmails", "Events", "Contacts", "TodayVisitors", "TodayPages",
-                "Last7DaysVisitors", "TodayByCountry", "TodayByBrowser1", "TodayByBrowser1_val", "TodayByBrowser2",
-                "TodayByBrowser2_val", "TodayVisitorsRate"));
+        return view(
+            'dashboard.home',
+            compact(
+                "GeneralWebmasterSections",
+                "Webmails",
+                "Events",
+                "Contacts",
+                "TodayVisitors",
+                "TodayPages",
+                "Last7DaysVisitors",
+                "TodayByCountry",
+                "TodayByBrowser1",
+                "TodayByBrowser1_val",
+                "TodayByBrowser2",
+                "TodayByBrowser2_val",
+                "TodayVisitorsRate"
+            )
+        );
     }
 
     /**
@@ -270,8 +290,11 @@ class DashboardController extends Controller
         if ($request->q != "") {
             if (@Auth::user()->permissionsGroup->view_status) {
                 //find Contacts
-                $Contacts = Contact::where('created_by', '=', Auth::user()->id)->where('first_name', 'like',
-                    '%' . $request->q . '%')
+                $Contacts = Contact::where('created_by', '=', Auth::user()->id)->where(
+                    'first_name',
+                    'like',
+                    '%' . $request->q . '%'
+                )
                     ->orwhere('last_name', 'like', '%' . $request->q . '%')
                     ->orwhere('company', 'like', '%' . $request->q . '%')
                     ->orwhere('city', 'like', '%' . $request->q . '%')
@@ -281,8 +304,11 @@ class DashboardController extends Controller
                     ->orderby('id', 'desc')->get();
 
                 //find Webmails
-                $Webmails = Webmail::where('created_by', '=', Auth::user()->id)->where('title', 'like',
-                    '%' . $request->q . '%')
+                $Webmails = Webmail::where('created_by', '=', Auth::user()->id)->where(
+                    'title',
+                    'like',
+                    '%' . $request->q . '%'
+                )
                     ->orwhere('from_name', 'like', '%' . $request->q . '%')
                     ->orwhere('from_email', 'like', '%' . $request->q . '%')
                     ->orwhere('from_phone', 'like', '%' . $request->q . '%')
@@ -291,20 +317,29 @@ class DashboardController extends Controller
                     ->orderby('id', 'desc')->get();
 
                 //find Events
-                $Events = Event::where('created_by', '=', Auth::user()->id)->where('title', 'like',
-                    '%' . $request->q . '%')
+                $Events = Event::where('created_by', '=', Auth::user()->id)->where(
+                    'title',
+                    'like',
+                    '%' . $request->q . '%'
+                )
                     ->orwhere('details', 'like', '%' . $request->q . '%')
                     ->orderby('start_date', 'desc')->get();
 
                 //find Topics
-                $Topics = Topic::where('created_by', '=', Auth::user()->id)->where('title_' . Helper::currentLanguage()->code, 'like',
-                    '%' . $request->q . '%')
+                $Topics = Topic::where('created_by', '=', Auth::user()->id)->where(
+                    'title_' . Helper::currentLanguage()->code,
+                    'like',
+                    '%' . $request->q . '%'
+                )
                     ->orwhere('seo_title_' . Helper::currentLanguage()->code, 'like', '%' . $request->q . '%')
                     ->orderby('id', 'desc')->get();
 
                 //find Sections
-                $Sections = Section::where('created_by', '=', Auth::user()->id)->where('title_' . Helper::currentLanguage()->code, 'like',
-                    '%' . $request->q . '%')
+                $Sections = Section::where('created_by', '=', Auth::user()->id)->where(
+                    'title_' . Helper::currentLanguage()->code,
+                    'like',
+                    '%' . $request->q . '%'
+                )
                     ->orwhere('seo_title_' . Helper::currentLanguage()->code, 'like', '%' . $request->q . '%')
                     ->orderby('id', 'desc')->get();
             } else {
@@ -341,7 +376,6 @@ class DashboardController extends Controller
                 $Sections = Section::where('title_' . Helper::currentLanguage()->code, 'like', '%' . $request->q . '%')
                     ->orwhere('seo_title_' . Helper::currentLanguage()->code, 'like', '%' . $request->q . '%')
                     ->orderby('id', 'desc')->get();
-
             }
             if (count($Webmails) > 0) {
                 $active_tab = 5;
@@ -358,15 +392,23 @@ class DashboardController extends Controller
             if (count($Topics) > 0) {
                 $active_tab = 1;
             }
-
         } else {
             return redirect()->action('Dashboard\DashboardController@search');
         }
         $search_word = $request->q;
 
-        return view("dashboard.search",
-            compact("GeneralWebmasterSections", "search_word", "Webmails", "Contacts", "Events", "Topics", "Sections",
-                "active_tab"));
+        return view(
+            "dashboard.search",
+            compact(
+                "GeneralWebmasterSections",
+                "search_word",
+                "Webmails",
+                "Contacts",
+                "Events",
+                "Topics",
+                "Sections",
+                "active_tab"
+            )
+        );
     }
-
 }

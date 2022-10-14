@@ -22,14 +22,16 @@
 <script src="{{ URL::asset('assets/frontend/js/i18n/defaults.min.js') }}"></script>
 <script src="{{ URL::asset('assets/frontend/js/select2.min.js') }}"></script>
 <script src="{{ URL::asset('assets/frontend/js/moment.js') }}"></script>
-<script src="{{ URL::asset('/assets/dashboard/js/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
+<script
+    src="{{ URL::asset('/assets/dashboard/js/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}">
+</script>
 
 <script>
     $(".select2").select2();
     $(".select2-multiple").select2({
         tags: true
     });
-    $(function () {
+    $(function() {
         $('.date').datetimepicker({
             format: 'YYYY-MM-DD',
             icons: {
@@ -60,20 +62,20 @@
         });
     });
 </script>
-{{--ajax subscribe to news letter--}}
-@if(Helper::GeneralSiteSettings("style_subscribe"))
+{{-- ajax subscribe to news letter --}}
+@if (Helper::GeneralSiteSettings('style_subscribe'))
     <script type="text/javascript">
-        jQuery(document).ready(function ($) {
+        jQuery(document).ready(function($) {
             "use strict";
 
             //Subscribe
-            $('form.subscribeForm').submit(function () {
+            $('form.subscribeForm').submit(function() {
 
                 var f = $(this).find('.form-group'),
                     ferror = false,
                     emailExp = /^[^\s()<>@,;:\/]+@\w[\w\.-]+\.[a-z]{2,}$/i;
 
-                f.children('input').each(function () { // run all inputs
+                f.children('input').each(function() { // run all inputs
 
                     var i = $(this); // current input
                     var rule = i.attr('data-rule');
@@ -120,7 +122,9 @@
                                 }
                                 break;
                         }
-                        i.next('.validation').html('<i class=\"fa fa-info\"></i> &nbsp;' + ( ierror ? (i.attr('data-msg') !== undefined ? i.attr('data-msg') : 'wrong Input') : '' )).show();
+                        i.next('.validation').html('<i class=\"fa fa-info\"></i> &nbsp;' + (ierror ?
+                            (i.attr('data-msg') !== undefined ? i.attr('data-msg') :
+                                'wrong Input') : '')).show();
                         !ierror ? i.next('.validation').hide() : i.next('.validation').show();
                     }
                 });
@@ -128,16 +132,15 @@
                 else var str = $(this).serialize();
                 $.ajax({
                     type: "POST",
-                    url: "{{ route("subscribeSubmit") }}",
+                    url: "{{ route('subscribeSubmit') }}",
                     data: str,
-                    success: function (msg) {
+                    success: function(msg) {
                         if (msg == 'OK') {
                             $("#subscribesendmessage").addClass("show");
                             $("#subscribeerrormessage").removeClass("show");
                             $("#subscribe_name").val('');
                             $("#subscribe_email").val('');
-                        }
-                        else {
+                        } else {
                             $("#subscribesendmessage").removeClass("show");
                             $("#subscribeerrormessage").addClass("show");
                             $('#subscribeerrormessage').html(msg);
@@ -153,22 +156,22 @@
 @endif
 
 {{-- Google Tags and google analytics --}}
-@if($WebmasterSettings->google_tags_status && $WebmasterSettings->google_tags_id !="")
+@if ($WebmasterSettings->google_tags_status && $WebmasterSettings->google_tags_id != '')
     <!-- Google Tag Manager (noscript) -->
     <noscript>
-        <iframe src="//www.googletagmanager.com/ns.html?id={!! $WebmasterSettings->google_tags_id !!}"
-                height="0" width="0" style="display:none;visibility:hidden"></iframe>
+        <iframe src="//www.googletagmanager.com/ns.html?id={!! $WebmasterSettings->google_tags_id !!}" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe>
     </noscript>
     <!-- End Google Tag Manager (noscript) -->
 @endif
-@if($WebmasterSettings->google_analytics_code !="")
+@if ($WebmasterSettings->google_analytics_code != '')
     {!! $WebmasterSettings->google_analytics_code !!}
 @endif
 
 
 <?php
-if ($PageTitle == "") {
-    $PageTitle = Helper::GeneralSiteSettings("site_title_" . @Helper::currentLanguage()->code);
+if ($PageTitle == '') {
+    $PageTitle = Helper::GeneralSiteSettings('site_title_' . @Helper::currentLanguage()->code);
 }
 ?>
 {!! Helper::SaveVisitorInfo($PageTitle) !!}
