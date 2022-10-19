@@ -69,7 +69,8 @@ return [
     |
     */
 
-    'timezone' => env('TIMEZONE', "UTC"),
+    // 'timezone' => env('TIMEZONE', "UTC"),
+    'timezone' => 'Asia/Jakarta',
 
     /*
     |--------------------------------------------------------------------------
@@ -82,7 +83,8 @@ return [
     |
     */
 
-    'locale' => env('DEFAULT_LANGUAGE', "en"),
+    // 'locale' => env('DEFAULT_LANGUAGE', "en"),
+    'locale' => 'id',
 
     /*
     |--------------------------------------------------------------------------
@@ -95,7 +97,8 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
+    // 'fallback_locale' => 'en',
+    'fallback_locale' => 'id',
 
     /*
     |--------------------------------------------------------------------------
@@ -108,7 +111,8 @@ return [
     |
     */
 
-    'faker_locale' => 'en_US',
+    // 'faker_locale' => 'en_US',
+    'faker_locale' => 'id_ID',
 
     /*
     |--------------------------------------------------------------------------

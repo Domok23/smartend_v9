@@ -20,7 +20,7 @@ return [
 
             'title' => env("APP_NAME"),
             'description' => 'All topics on '.env("APP_NAME"),
-            'language' => 'en-US',
+            'language' => 'id-ID',
 
             /*
              * The image to display for the feed. For Atom feeds, this is displayed as
