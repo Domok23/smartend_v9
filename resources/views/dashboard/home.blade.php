@@ -32,7 +32,8 @@
                     @if (count($home_links) > 0)
                         @foreach ($home_links as $key => $home_link)
                             <div class="col-sm-4 col-md-4 col-lg-3">
-                                <a href="{{ @$home_link->btn_link }}" {{ @$home_link->btn_target ? "target=\"_blank\"" : '' }}
+                                <a href="{{ @$home_link->btn_link }}"
+                                    {{ @$home_link->btn_target ? "target=\"_blank\"" : '' }}
                                     class="m-b w-100 {!! @$home_link->btn_class !!}">{!! @$home_link->{'btn_title_' . @Helper::currentLanguage()->code} !!}</a>
                             </div>
                         @endforeach
@@ -98,7 +99,7 @@
                                     if ($headerWebmasterSection->id == 8) {
                                         $LiIcon = '&#xe8f6;';
                                     }
-
+                                    
                                     ?>
                                     <div class="col-xs-{{ $b_cls }}">
                                         <div class="box p-a" style="cursor: pointer"
@@ -498,7 +499,7 @@ $ii = 1;
                                             } else {
                                                 $dtformated = Helper::formatDate($Webmail->date);
                                             }
-
+                                            
                                             try {
                                                 $groupColor = $Webmail->webmailsGroup->color;
                                                 $groupName = $Webmail->webmailsGroup->name;
@@ -506,7 +507,7 @@ $ii = 1;
                                                 $groupColor = '';
                                                 $groupName = '';
                                             }
-
+                                            
                                             $fontStyle = '';
                                             $unreadIcon = '&#xe151;';
                                             $unreadbg = '';
